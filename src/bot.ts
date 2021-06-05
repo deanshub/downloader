@@ -14,8 +14,15 @@ export async function setupBot(): Promise<Telegraf<Context>>{
     // bot.on('sticker', (ctx) => ctx.reply('👍'))
     // bot.hears('hi', (ctx) => ctx.reply('Hey there'))
     bot.command('download', ctx =>{
-        const text = getCommandText('download', ctx.message.text)
-        ctx.reply(text)
+        const magnetURI = getCommandText('download', ctx.message.text)
+
+        client.add(magnetURI, {path: process.env.DOWNLOAD_DIR??process.cwd()} ,(torrent) =>{
+            // Got torrent metadata!
+            ctx.reply(`Downloading ${torrent.name}`)
+            torrent.on('done', ()=>{
+                ctx.reply(`${torrent.name} Downloaded`)
+            })
+        })
     })
     bot.launch()
     
@@ -29,15 +36,3 @@ export async function setupBot(): Promise<Telegraf<Context>>{
 function getCommandText(command: string, text:string):string {
     return text.replace(`/${command} `,'')
 }
-// var magnetURI = '...'
-
-// client.add(magnetURI, function (torrent) {
-//   // Got torrent metadata!
-//   console.log('Client is downloading:', torrent.infoHash)
-
-//   torrent.files.forEach(function (file) {
-//     // Display the file by appending it to the DOM. Supports video, audio, images, and
-//     // more. Specify a container element (CSS selector or reference to DOM node).
-//     file.appendTo('body')
-//   })
-// })
