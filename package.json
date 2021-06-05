@@ -1,0 +1,41 @@
+{
+  "name": "downloader",
+  "version": "1.0.0",
+  "description": "Torrent Download Telegram Bot",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "nodemon",
+    "tsnode": "ts-node src/index.ts",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deanshub/downloader.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "torrent"
+  ],
+  "author": "Dean Shub",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deanshub/downloader/issues"
+  },
+  "homepage": "https://github.com/deanshub/downloader#readme",
+  "dependencies": {
+    "@types/node": "^15.12.1",
+    "@types/webtorrent": "^0.109.0",
+    "debug": "^4.3.1",
+    "dotenv": "^10.0.0",
+    "telegraf": "^4.3.0",
+    "typescript": "^4.3.2",
+    "webtorrent": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "ts-node": "^10.0.0"
+  }
+}
