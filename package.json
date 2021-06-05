@@ -30,6 +30,7 @@
     "@types/webtorrent": "^0.109.0",
     "debug": "^4.3.1",
     "dotenv": "^10.0.0",
+    "humanize-duration": "^3.26.0",
     "telegraf": "^4.3.0",
     "torrent-search-api": "^2.1.4",
     "typescript": "^4.3.2",
@@ -37,6 +38,7 @@
     "webtorrent": "^1.0.0"
   },
   "devDependencies": {
+    "@types/humanize-duration": "^3.25.0",
     "@types/torrent-search-api": "^2.0.0",
     "@types/uuid": "^8.3.0",
     "nodemon": "^2.0.7",

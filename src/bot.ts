@@ -1,8 +1,9 @@
 import { Telegraf, Context } from 'telegraf'
 import WebTorrent from 'webtorrent'
 import TorrentSearchApi from 'torrent-search-api'
-import { set, get } from './cbData'
 import { Update } from 'typegram'
+import { set, get } from './cbData'
+import { download, getCurrent } from './downloads'
 
 var client = new WebTorrent()
 
@@ -54,6 +55,31 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
     })
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
+    bot.command('downloads', async (ctx) => {
+        const downloads = getCurrent()
+        downloads.forEach((download) => {
+            ctx.replyWithMarkdown(
+                `*${download.name}*\n${download.timeRemaining} (${download.progress})`,
+                {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: '❌ Cancel',
+                                    callback_data: download.id,
+                                },
+                            ],
+                        ],
+                        remove_keyboard: true,
+                        resize_keyboard: true,
+                    },
+                }
+            )
+        })
+        if (downloads.length === 0) {
+            ctx.reply('There are no current downloads')
+        }
+    })
 
     bot.launch()
 
@@ -65,18 +91,6 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
 function getCommandText(command: string, text: string): string {
     return text.replace(`/${command} `, '')
-}
-
-async function download(magnetURI: string): Promise<WebTorrent.Torrent> {
-    return new Promise((resolve, reject) => {
-        client.add(
-            magnetURI,
-            { path: process.env.DOWNLOAD_DIR ?? process.cwd() },
-            (torrent) => {
-                resolve(torrent)
-            }
-        )
-    })
 }
 
 async function search(ctx: Context<Update>, command: string) {
