@@ -102,6 +102,10 @@ async function search(ctx: Context<Update>, command: string) {
                             text: '📥 Download',
                             callback_data: key,
                         },
+                        {
+                            text: '🔗 Description',
+                            url: torrent.desc,
+                        },
                     ],
                 ],
                 remove_keyboard: true,
