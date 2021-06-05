@@ -2,6 +2,7 @@ import { Telegraf, Context } from 'telegraf'
 import WebTorrent from 'webtorrent'
 import TorrentSearchApi from 'torrent-search-api';
 import {set, get } from './cbData'
+import { Update } from 'typegram';
 
 var client = new WebTorrent()
 
@@ -35,30 +36,7 @@ export async function setupBot(): Promise<Telegraf<Context>>{
         })
         ctx.reply(`Downloading ${torrent.name}`)
     })
-    bot.command('search', async (ctx)=>{
-        const searchTerm = getCommandText('search', ctx.message.text)
-        const torrents = await TorrentSearchApi.search(searchTerm, 'All', 20).catch(e=>{
-            console.warn(e)
-            return []
-        });
-        torrents.forEach(async torrent=>{
-            const magnet = await TorrentSearchApi.getMagnet(torrent);
-            const key = set(magnet)
-            ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
-                reply_markup:{
-                    inline_keyboard:[[{
-                        text: '📥 Download',
-                        callback_data: key,
-                    }]],
-                    remove_keyboard:true,
-                    resize_keyboard: true,
-                },
-            })
-        })
-        if (torrents.length===0){
-            ctx.reply('No torrents found')
-        }
-    })
+    bot.command('search', (ctx)=>search(ctx, 'search'))
     bot.on('callback_query', async (ctx)=>{
         // @ts-ignore
         const magnet = get(ctx.callbackQuery.data)
@@ -75,6 +53,7 @@ export async function setupBot(): Promise<Telegraf<Context>>{
             ctx.reply(`Can't download, please try later`)
         }
     })
+    bot.command('movies',async (ctx)=>search(ctx, 'movies'))
 
     bot.launch()
     
@@ -95,4 +74,31 @@ async function download(magnetURI: string):Promise<WebTorrent.Torrent>{
             resolve(torrent)
         })
     })
+}
+
+async function search(ctx: Context<Update>, command: string){
+    // @ts-ignore
+    const searchTerm = getCommandText(command, ctx.message.text)
+    const category = command==='movies'?'Movies':'All'
+    const torrents = await TorrentSearchApi.search(searchTerm, category, 20).catch(e=>{
+        console.warn(e)
+        return []
+    });
+    torrents.forEach(async torrent=>{
+        const magnet = await TorrentSearchApi.getMagnet(torrent);
+        const key = set(magnet)
+        ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
+            reply_markup:{
+                inline_keyboard:[[{
+                    text: '📥 Download',
+                    callback_data: key,
+                }]],
+                remove_keyboard:true,
+                resize_keyboard: true,
+            },
+        })
+    })
+    if (torrents.length===0){
+        ctx.reply('No torrents found')
+    }
 }
