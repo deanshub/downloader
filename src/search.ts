@@ -23,9 +23,7 @@ export async function searchTorrents(
     const solidTorrents = await searchSolid(term)
     const torrents: SearchResults[] = solidTorrents.map((t) => ({
         title: t.title,
-        desc: `${t.removed ? 'Removed\n' : ''}${
-            t.swarm.verified ? 'Verified ' : ' '
-        }Seeders:${t.swarm.seeders}`,
+        desc: `https://solidtorrents.net/view/${t.title}/${t._id}`,
         size: bytes(t.size),
         magnet: t.magnet,
     }))
