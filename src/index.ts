@@ -6,4 +6,5 @@ async function init(): Promise<void> {
     const bot = await setupBot()
 }
 
+process.on('uncaughtException', console.error)
 init().catch(console.error)

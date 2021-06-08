@@ -1,21 +1,11 @@
 import { Telegraf, Context } from 'telegraf'
 import WebTorrent from 'webtorrent'
-import TorrentSearchApi from 'torrent-search-api'
 import { Update } from 'typegram'
 import { set, get } from './cbData'
 import { download, getCurrent } from './downloads'
+import { searchTorrents } from './search'
 
 var client = new WebTorrent()
-
-const providers = TorrentSearchApi.getProviders()
-TorrentSearchApi.enableProvider('1337x')
-// providers.forEach(provider=>{
-//     // @ts-ignore
-//     if(provi''der.public){
-//         console.log(provider)
-//         // TorrentSearchApi.enableProvider(provider.name);
-//     }
-// })
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -96,18 +86,10 @@ function getCommandText(command: string, text: string): string {
 async function search(ctx: Context<Update>, command: string) {
     // @ts-ignore
     const searchTerm = getCommandText(command, ctx.message.text)
-    const category = command === 'movies' ? 'Movies' : 'All'
-    const torrents = await TorrentSearchApi.search(
-        searchTerm,
-        category,
-        20
-    ).catch((e) => {
-        console.warn(e)
-        return []
-    })
+    const category = command === 'movies' ? 'Movies' : undefined
+    const torrents = await searchTorrents(searchTerm, category)
     torrents.forEach(async (torrent) => {
-        const magnet = await TorrentSearchApi.getMagnet(torrent)
-        const key = set(magnet)
+        const key = set(torrent.magnet)
         ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
             reply_markup: {
                 inline_keyboard: [

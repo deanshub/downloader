@@ -28,6 +28,8 @@
   "dependencies": {
     "@types/node": "^15.12.1",
     "@types/webtorrent": "^0.109.0",
+    "axios": "^0.21.1",
+    "bytes": "^3.1.0",
     "debug": "^4.3.1",
     "dotenv": "^10.0.0",
     "humanize-duration": "^3.26.0",
@@ -38,6 +40,7 @@
     "webtorrent": "^1.0.0"
   },
   "devDependencies": {
+    "@types/bytes": "^3.1.0",
     "@types/humanize-duration": "^3.25.0",
     "@types/torrent-search-api": "^2.0.0",
     "@types/uuid": "^8.3.0",
