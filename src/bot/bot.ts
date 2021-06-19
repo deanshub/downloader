@@ -1,9 +1,11 @@
 import { Telegraf, Context } from 'telegraf'
 import WebTorrent from 'webtorrent'
 import { Update } from 'typegram'
-import { set, get } from './cbData'
-import { download, getCurrent } from './downloads'
-import { searchTorrents } from './search'
+import { set, get } from '../cbData'
+import { download, getCurrent, cancelDownload } from '../downloads'
+import { searchTorrents } from '../search'
+import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
+import { keyboard, defaultExtra } from './keyboard'
 
 var client = new WebTorrent()
 
@@ -11,12 +13,24 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
         throw new Error('No BOT_TOKEN provided')
     }
+    setupAdmins()
     const bot = new Telegraf(process.env.BOT_TOKEN)
-    bot.start((ctx) => ctx.reply('Welcome'))
-    bot.help((ctx) => ctx.reply('Send me a sticker'))
-    // bot.on('sticker', (ctx) => ctx.reply('👍'))
-    // bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+
+    bot.start((ctx) => ctx.reply('Welcome', defaultExtra))
+
+    bot.help((ctx) =>
+        ctx.reply('type /search to search for torrents', defaultExtra)
+    )
+
     bot.command('download', async (ctx) => {
+        if (!isAdmin(ctx)) {
+            ctx.reply(`You're not an admin so you can't download`)
+            ctx.telegram.sendMessage(
+                getAdmin(),
+                `${ctx.from.first_name} ${ctx.from.last_name} (${ctx.from.username} - ${ctx.from.id}) tried to download`
+            )
+            return
+        }
         const magnetURI = getCommandText('download', ctx.message.text)
         const torrent = await download(magnetURI)
         torrent.on('done', () => {
@@ -25,38 +39,63 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         torrent.on('error', (e) => {
             ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
         })
-        ctx.reply(`Downloading ${torrent.name}`)
+        ctx.reply(`Downloading ${torrent.name}`, defaultExtra)
     })
+
     bot.command('search', (ctx) => search(ctx, 'search'))
+
     bot.on('callback_query', async (ctx) => {
+        if (!isAdmin(ctx)) {
+            ctx.reply(`You're not an admin so you can't download`)
+            ctx.telegram.sendMessage(
+                getAdmin(),
+                `${ctx.from?.first_name} ${ctx.from?.last_name} (${ctx.from?.username} - ${ctx.from?.id}) tried to download`
+            )
+            return
+        }
         // @ts-ignore
-        const magnet = get(ctx.callbackQuery.data)
-        if (magnet) {
-            const torrent = await download(magnet)
-            torrent.on('done', () => {
-                ctx.reply(`${torrent.name} Downloaded`)
-            })
-            torrent.on('error', (e) => {
-                ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
-            })
-            ctx.reply(`Downloading ${torrent.name}`)
+        const cbData = get(ctx.callbackQuery.data)
+        if (cbData) {
+            if (cbData.type === 'download') {
+                const torrent = await download(cbData.data)
+                torrent.on('done', () => {
+                    ctx.reply(`${torrent.name} Downloaded`)
+                })
+                torrent.on('error', (e) => {
+                    ctx.reply(
+                        `${torrent.name} Failed to download\n${e.toString()}`
+                    )
+                })
+                ctx.reply(`Downloading ${torrent.name}`, defaultExtra)
+            } else if (cbData.type === 'cancel') {
+                if (cancelDownload(cbData.data)) {
+                    ctx.reply(`Canceled`, defaultExtra)
+                } else {
+                    ctx.reply(`Can't find the torrent to cancel`, defaultExtra)
+                }
+            }
         } else {
-            ctx.reply(`Can't download, please try later`)
+            ctx.reply(`Can't, please try later`, defaultExtra)
         }
     })
+
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
+
     bot.command('downloads', async (ctx) => {
         const downloads = getCurrent()
         downloads.forEach((download) => {
+            const key = set({ data: download.magnet, type: 'cancel' })
+
             ctx.replyWithMarkdown(
                 `*${download.name}*\n${download.timeRemaining} (${download.progress})`,
                 {
                     reply_markup: {
+                        keyboard,
                         inline_keyboard: [
                             [
                                 {
                                     text: '❌ Cancel',
-                                    callback_data: download.id,
+                                    callback_data: key,
                                 },
                             ],
                         ],
@@ -67,15 +106,15 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             )
         })
         if (downloads.length === 0) {
-            ctx.reply('There are no current downloads')
+            ctx.reply('There are no current downloads', defaultExtra)
         }
     })
 
     bot.launch()
 
     // Enable graceful stop
-    process.once('SIGINT', () => bot.stop('SIGINT'))
-    process.once('SIGTERM', () => bot.stop('SIGTERM'))
+    // process.once('SIGINT', () => bot.stop('SIGINT'))
+    // process.once('SIGTERM', () => bot.stop('SIGTERM'))
     return bot
 }
 
@@ -89,9 +128,10 @@ async function search(ctx: Context<Update>, command: string) {
     const category = command === 'movies' ? 'Movies' : undefined
     const torrents = await searchTorrents(searchTerm, category)
     torrents.forEach(async (torrent) => {
-        const key = set(torrent.magnet)
+        const key = set({ data: torrent.magnet, type: 'download' })
         ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
             reply_markup: {
+                keyboard,
                 inline_keyboard: [
                     [
                         {
@@ -110,6 +150,6 @@ async function search(ctx: Context<Update>, command: string) {
         })
     })
     if (torrents.length === 0) {
-        ctx.reply('No torrents found')
+        ctx.reply('No torrents found', defaultExtra)
     }
 }

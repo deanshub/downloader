@@ -1,14 +1,18 @@
 import { v4 as uuidv4 } from 'uuid'
 
-const cache = new Map<string, string>()
+interface CbData{
+    type: 'download'|'cancel'
+    data: string
+}
+const cache = new Map<string, CbData>()
 
-export function set(data: string): string {
+export function set(cbdata: CbData): string {
     const key = uuidv4()
-    cache.set(key, data)
+    cache.set(key, cbdata)
     return key
 }
 
-export function get(key: string): string | null {
+export function get(key: string): CbData | null {
     if (cache.has(key)) {
         return cache.get(key) ?? null
     }

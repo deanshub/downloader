@@ -30,6 +30,16 @@ export function getCurrent() {
             name: torrent.name,
             progress: `${(torrent.progress * 100).toFixed(2)}%`,
             timeRemaining: humanizeDuration(torrent.timeRemaining),
+            magnet: torrent.magnetURI,
         }
     })
+}
+
+export function cancelDownload(magnet: string): boolean {
+    const download = Array.from(downloads).find((t) => t.magnetURI === magnet)
+    if (download) {
+        download.destroy()
+        return true
+    }
+    return false
 }
