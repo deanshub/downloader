@@ -111,12 +111,17 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('pull', async (ctx) => {
-        await execa('git', ['pull'], {
+        const { stdout } = await execa('git', ['pull'], {
             cwd: process.cwd(),
         })
-        await execa('yarn', {
-            cwd: process.cwd(),
-        })
+
+        if (stdout !== 'Already up to date.') {
+            await execa('yarn', {
+                cwd: process.cwd(),
+            })
+            return ctx.reply('Pulled')
+        }
+        ctx.reply('Already synced')
     })
 
     bot.launch()
