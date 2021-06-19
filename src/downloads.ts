@@ -36,9 +36,10 @@ export function getCurrent() {
 }
 
 export function cancelDownload(magnet: string): boolean {
-    const download = Array.from(downloads).find((t) => t.magnetURI === magnet)
-    if (download) {
-        download.destroy()
+    const torrent = Array.from(downloads).find((t) => t.magnetURI === magnet)
+    if (torrent) {
+        torrent.destroy()
+        downloads.delete(torrent)
         return true
     }
     return false
