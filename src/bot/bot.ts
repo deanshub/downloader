@@ -5,7 +5,7 @@ import { set, get } from '../cbData'
 import { download, getCurrent, cancelDownload } from '../downloads'
 import { searchTorrents } from '../search'
 import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
-import { keyboard, defaultExtra } from './keyboard'
+import { defaultExtra } from './keyboard'
 
 var client = new WebTorrent()
 
@@ -90,7 +90,6 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 `*${download.name}*\n${download.timeRemaining} (${download.progress})`,
                 {
                     reply_markup: {
-                        keyboard,
                         inline_keyboard: [
                             [
                                 {
@@ -131,7 +130,6 @@ async function search(ctx: Context<Update>, command: string) {
         const key = set({ data: torrent.magnet, type: 'download' })
         ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
             reply_markup: {
-                keyboard,
                 inline_keyboard: [
                     [
                         {
