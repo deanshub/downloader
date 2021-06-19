@@ -1,6 +1,7 @@
 import { Telegraf, Context } from 'telegraf'
 import WebTorrent from 'webtorrent'
 import { Update } from 'typegram'
+import execa from 'execa'
 import { set, get } from '../cbData'
 import { download, getCurrent, cancelDownload } from '../downloads'
 import { searchTorrents } from '../search'
@@ -107,6 +108,15 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         if (downloads.length === 0) {
             ctx.reply('There are no current downloads', defaultExtra)
         }
+    })
+
+    bot.command('pull', async (ctx) => {
+        await execa('git', ['pull'], {
+            cwd: process.cwd(),
+        })
+        await execa('yarn', {
+            cwd: process.cwd(),
+        })
     })
 
     bot.launch()

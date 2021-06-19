@@ -32,6 +32,7 @@
     "bytes": "^3.1.0",
     "debug": "^4.3.1",
     "dotenv": "^10.0.0",
+    "execa": "^5.1.1",
     "humanize-duration": "^3.26.0",
     "telegraf": "^4.3.0",
     "torrent-search-api": "^2.1.4",
