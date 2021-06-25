@@ -34,8 +34,9 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
         const magnetURI = getCommandText('download', ctx.message.text)
         const torrent = await download(magnetURI)
-        torrent.on('done', () => {
+        torrent.on('done', async () => {
             ctx.reply(`${torrent.name} Downloaded`)
+            await refreshDlna()
         })
         torrent.on('error', (e) => {
             ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
@@ -129,15 +130,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('refresh', async (ctx) => {
-        await execa('sudo', [
-            'service',
-            'minidlna',
-            'force-reload',
-        ])
-
-        await execa('sudo', ['service', 'minidlna', 'restart'], {
-            cwd: process.cwd(),
-        })
+        await refreshDlna()
         return ctx.reply('Refreshed')
     })
 
@@ -182,4 +175,12 @@ async function search(ctx: Context<Update>, command: string) {
     if (torrents.length === 0) {
         ctx.reply('No torrents found', defaultExtra)
     }
+}
+
+async function refreshDlna(): Promise<void> {
+    await execa('sudo', ['service', 'minidlna', 'force-reload'])
+
+    await execa('sudo', ['service', 'minidlna', 'restart'], {
+        cwd: process.cwd(),
+    })
 }
