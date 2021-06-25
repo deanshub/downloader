@@ -124,6 +124,16 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         ctx.reply('Already synced')
     })
 
+    bot.command('refresh', async(ctx) => {
+        const { stdout } = await execa('minidlna', ['-R'])
+        ctx.reply(stdout)
+
+        //     await execa('service',['minidlna', 'restart'], {
+        //         cwd: process.cwd(),
+        //     })
+        //     return ctx.reply('Refreshed')
+    })
+
     bot.launch()
 
     // Enable graceful stop
