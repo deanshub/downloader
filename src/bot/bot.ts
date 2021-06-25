@@ -111,6 +111,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('pull', async (ctx) => {
+        await execa('git', ['reset', '--hard'], {
+            cwd: process.cwd(),
+        })
+
         const { stdout } = await execa('git', ['pull'], {
             cwd: process.cwd(),
         })
@@ -125,10 +129,13 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('refresh', async (ctx) => {
-        const { stdout } = await execa('minidlna', ['-R'])
-        ctx.reply(stdout)
+        await execa('sudo', [
+            'service',
+            'minidlna',
+            'force-reload',
+        ])
 
-        await execa('service', ['minidlna', 'restart'], {
+        await execa('sudo', ['service', 'minidlna', 'restart'], {
             cwd: process.cwd(),
         })
         return ctx.reply('Refreshed')

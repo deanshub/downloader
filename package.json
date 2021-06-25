@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node build/index.js",
-    "dev": "nodemon",
+    "dev": "sudo env \"PATH=$PATH\" nodemon",
     "tsnode": "ts-node src/index.ts",
     "test": "jest"
   },
