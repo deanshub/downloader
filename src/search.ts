@@ -23,7 +23,7 @@ export async function searchTorrents(
     const solidTorrents = await searchSolid(term)
     const torrents: SearchResults[] = solidTorrents.map((t) => ({
         title: t.title,
-        desc: `https://solidtorrents.net/view/${t.title}/${t._id}`,
+        desc: `https://solidtorrents.net/view/${encodeURIComponent(t.title)}/${t._id}`,
         size: bytes(t.size),
         magnet: t.magnet,
     }))
