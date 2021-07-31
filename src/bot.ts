@@ -7,6 +7,10 @@ import { searchTorrents } from './search'
 
 var client = new WebTorrent()
 
+const videosRegex = /\.(mp4|mkv|avi)/
+const imagesRegex = /\.(png|jpg|gif)/
+const audioRegex = /\.(mp3|ogg)/
+
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
         throw new Error('No BOT_TOKEN provided')
@@ -16,20 +20,82 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.help((ctx) => ctx.reply('Send me a sticker'))
     // bot.on('sticker', (ctx) => ctx.reply('👍'))
     // bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-    bot.command('download', async (ctx) => {
-        const magnetURI = getCommandText('download', ctx.message.text)
+    bot.command('stream', async (ctx) => {
+        const magnetURI = getCommandText('stream', ctx.message.text)
+        console.log('got magnet')
         const torrent = await download(magnetURI)
+        console.log('got torrent')
+
+        torrent.on('ready', () => {
+            console.log(torrent.files)
+            torrent.files.forEach((file) => {
+                console.log(file)
+                if (videosRegex.test(file.name)) {
+                    ctx.replyWithVideo({
+                        source: file.createReadStream(),
+                        filename: file.name,
+                    })
+                } else if (imagesRegex.test(file.name)) {
+                    ctx.replyWithPhoto({
+                        source: file.createReadStream(),
+                        filename: file.name,
+                    })
+                } else if (audioRegex.test(file.name)) {
+                    ctx.replyWithAudio({
+                        source: file.createReadStream(),
+                        filename: file.name,
+                    })
+                } else {
+                    ctx.replyWithDocument({
+                        source: file.createReadStream(),
+                        filename: file.name,
+                    })
+                }
+            })
+        })
+
         torrent.on('done', () => {
             ctx.reply(`${torrent.name} Downloaded`)
+            // console.log(torrent.files)
+            // torrent.files.forEach((file) => {
+            //     console.log(file)
+            //     ctx.replyWithDocument({
+            //         source: file.createReadStream(),
+            //         filename: file.name,
+            //     })
+            // file.getBuffer((err, source) => {
+            //     if (err || !source) {
+            //         console.warn(err || 'no source')
+            //     } else {
+            // ctx.replyWithDocument({ source })
+            //     }
+            // })
+            // })
         })
         torrent.on('error', (e) => {
             ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
         })
-        ctx.reply(`Downloading ${torrent.name}`)
+    })
+    bot.command('download', async (ctx) => {
+        const magnetURI = getCommandText('download', ctx.message.text)
+        const torrent = await download(magnetURI)
+        if (isAdmin(ctx)) {
+            torrent.on('done', () => {
+                ctx.reply(`${torrent.name} Downloaded`)
+            })
+            torrent.on('error', (e) => {
+                ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
+            })
+            ctx.reply(`Downloading ${torrent.name}`)
+        } else {
+            torrent.files.forEach((file) => {
+                ctx.replyWithDocument({ source: file.createReadStream() })
+            })
+        }
     })
     bot.command('search', (ctx) => search(ctx, 'search'))
     bot.on('callback_query', async (ctx) => {
-        // @ts-ignore
+        // @ts-ignoredownload
         const magnet = get(ctx.callbackQuery.data)
         if (magnet) {
             const torrent = await download(magnet)
@@ -112,4 +178,12 @@ async function search(ctx: Context<Update>, command: string) {
     if (torrents.length === 0) {
         ctx.reply('No torrents found')
     }
+}
+
+const admins: number[] = (process.env.ADMINS_CHATID ?? '')
+    .split(',')
+    .map(Number)
+function isAdmin(ctx: Context<Update>): boolean {
+    const userId = ctx.message?.from.id ?? 0
+    return admins.includes(userId)
 }

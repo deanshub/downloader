@@ -2,3 +2,4 @@ downloads - show current downloads
 download - downloads a magnet uri
 search - search any torrent
 movies - search movies torrents
+stream - stream torrents to telegram
