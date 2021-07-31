@@ -170,7 +170,7 @@ async function search(ctx: Context<Update>, command: string) {
                 remove_keyboard: true,
                 resize_keyboard: true,
             },
-        })
+        }).catch(console.warn)
     })
     if (torrents.length === 0) {
         ctx.reply('No torrents found', defaultExtra)
