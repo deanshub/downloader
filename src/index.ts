@@ -1,8 +1,8 @@
-import { config } from 'dotenv'
 import { setupBot } from './bot/bot'
+import { loadFromTorrentsDir } from './downloads'
 
 async function init(): Promise<void> {
-    config()
+    await loadFromTorrentsDir()
     const bot = await setupBot()
 }
 
