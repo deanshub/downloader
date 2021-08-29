@@ -7,6 +7,9 @@ on:
 
 jobs:
   docker:
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,5 +33,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/schlez/downloader:latest
+          tags: ghcr.io/deanshub/downloader:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
