@@ -44,7 +44,6 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/deanshub/downloader:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
