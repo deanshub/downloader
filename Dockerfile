@@ -1,5 +1,4 @@
-ARG NODE_IMAGE=arm32v7/node
-FROM ${NODE_IMAGE}
+FROM node:16
 
 WORKDIR /app
 
