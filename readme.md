@@ -15,7 +15,7 @@ ADMINS_CHATID=<Telegram chat Ids of admins seperated with comma>
 version: '3'
 services:
     downloader:
-        image: 'WIPWIPWIP'
+        image: ghcr.io/deanshub/downloader
         restart: unless-stopped
         volumes:
             - '/media/pi/MyDrive/raspberry-downloads/:/downloads'
