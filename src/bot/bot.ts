@@ -1,14 +1,12 @@
 import { Telegraf, Context } from 'telegraf'
-import WebTorrent from 'webtorrent'
 import { Update } from 'typegram'
 import execa from 'execa'
 import { set, get } from '../cbData'
-import { download, getCurrent, cancelDownload } from '../downloads'
+import { download, cancelDownload } from '../downloads'
 import { searchTorrents } from '../search'
 import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
 import { defaultExtra } from './keyboard'
-
-var client = new WebTorrent()
+import { downloads, handleRefreshCall } from './downloads'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -75,6 +73,8 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 } else {
                     ctx.reply(`Can't find the torrent to cancel`, defaultExtra)
                 }
+            } else if (cbData.type === 'refresh') {
+                await handleRefreshCall(cbData.data, ctx)
             }
         } else {
             ctx.reply(`Can't, please try later`, defaultExtra)
@@ -82,34 +82,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
-
-    bot.command('downloads', async (ctx) => {
-        const downloads = getCurrent()
-        downloads.forEach((download) => {
-            const key = set({ data: download.magnet, type: 'cancel' })
-
-            ctx.replyWithMarkdown(
-                `*${download.name}*\n${download.timeRemaining} (${download.progress})`,
-                {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: '❌ Cancel',
-                                    callback_data: key,
-                                },
-                            ],
-                        ],
-                        remove_keyboard: true,
-                        resize_keyboard: true,
-                    },
-                }
-            )
-        })
-        if (downloads.length === 0) {
-            ctx.reply('There are no current downloads', defaultExtra)
-        }
-    })
+    bot.command('downloads', downloads)
 
     bot.command('pull', async (ctx) => {
         await execa('git', ['reset', '--hard'], {

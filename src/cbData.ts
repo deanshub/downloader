@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-interface CbData{
-    type: 'download'|'cancel'
+export interface CbData {
+    type: 'download' | 'cancel' | 'refresh'
     data: string
 }
 const cache = new Map<string, CbData>()

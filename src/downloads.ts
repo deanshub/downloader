@@ -44,8 +44,11 @@ export function getCurrent() {
         return {
             id: torrent.infoHash,
             name: torrent.name,
-            progress: `${(torrent.progress * 100).toFixed(2)}%`,
-            timeRemaining: humanizeDuration(torrent.timeRemaining),
+            progress: torrent.progress,
+            timeRemaining: humanizeDuration(torrent.timeRemaining, {
+                round: true,
+            }),
+            timeRemainingMs: torrent.timeRemaining,
             magnet: torrent.magnetURI,
         }
     })
