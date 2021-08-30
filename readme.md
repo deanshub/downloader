@@ -9,6 +9,20 @@ TORRENTS_DIR=<Torrent files directory - default is DOWNLOAD_DIR/torrents>
 ADMINS_CHATID=<Telegram chat Ids of admins seperated with comma>
 ```
 
+## Prebuilt Docker images
+
+[The docker images are hosted on GitHub packages](https://github.com/deanshub/downloader/pkgs/container/downloader). You can use them by pulling the image:
+
+```bash
+docker pull ghcr.io/deanshub/downloader
+```
+
+The image is built for multiple arches, which will be downloaded automatically based on the current machine arch:
+
+* linux/amd64
+* arm64
+* armv7 (for Raspberry Pi 3)
+
 ## Docker compose example
 
 ```yaml
