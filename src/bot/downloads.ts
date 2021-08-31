@@ -1,4 +1,4 @@
-import { getCurrent } from '../downloads'
+import { getCurrent, Download } from '../downloads'
 import { set } from '../cbData'
 import { Context } from 'telegraf'
 import {
@@ -7,6 +7,7 @@ import {
 } from 'telegraf/typings/core/types/typegram'
 import { defaultExtra } from './keyboard'
 import { progressBar } from './progressBarText'
+import { stripHtml } from '../stripHtml'
 
 export async function downloads(ctx: Context<Update>): Promise<void> {
     const downloads = getCurrent()
@@ -24,7 +25,6 @@ export async function downloads(ctx: Context<Update>): Promise<void> {
     }
 }
 
-type Download = ReturnType<typeof getCurrent>[number]
 function stringifyDownload(
     download: Pick<Download, 'progress' | 'name' | 'timeRemaining'>
 ): string {
@@ -36,10 +36,6 @@ function stringifyDownload(
     return `<b>${stripHtml(download.name)}</b>\n${progressbar} (${progress})\n${
         download.timeRemaining
     }`
-}
-
-function stripHtml(html: string): string {
-    return html.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
 }
 
 function getReplyMarkupForDownload(download: Download): InlineKeyboardMarkup {

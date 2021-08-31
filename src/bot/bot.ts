@@ -7,6 +7,7 @@ import { searchTorrents } from '../search'
 import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
 import { defaultExtra } from './keyboard'
 import { downloads, handleRefreshCall } from './downloads'
+import { stripHtml } from '../stripHtml'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -37,7 +38,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             await refreshDlna()
         })
         torrent.on('error', (e) => {
-            ctx.reply(`${torrent.name} Failed to download\n${e.toString()}`)
+            ctx.replyWithHTML(
+                `<b>${stripHtml(
+                    torrent.name
+                )}</b> failed to download</b>\n${stripHtml(e.toString())}`
+            )
         })
         ctx.reply(`Downloading ${torrent.name}`, defaultExtra)
     })
