@@ -2,7 +2,6 @@ import WebTorrent from 'webtorrent'
 import humanizeDuration from 'humanize-duration'
 import fs from 'fs-extra'
 import path from 'path'
-import { toTorrentFile } from 'parse-torrent'
 
 const client = new WebTorrent()
 
@@ -32,15 +31,21 @@ export async function download(magnetURI: string): Promise<WebTorrent.Torrent> {
         .on('done', () => {
             removeTorrent(torrent)
         })
-        .on('error', () => {
-            removeTorrent(torrent)
-        })
 
     return torrent
 }
 
-export function getCurrent() {
-    return Array.from(downloads).map((torrent) => {
+export type Download = {
+    id: string
+    name: string
+    progress: number
+    timeRemaining: string
+    timeRemainingMs: number
+    magnet: string
+}
+
+export function getCurrent(): Download[] {
+    return Array.from(downloads).map((torrent): Download => {
         return {
             id: torrent.infoHash,
             name: torrent.name,
