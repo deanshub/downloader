@@ -11,10 +11,13 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
+      - name: "Install Dependencies"
+        run: yarn
+
       - name: "Build & test"
         run: |
-          # npm run test
-          npm run build
+          # yarn test
+          yarn build
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
