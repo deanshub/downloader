@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: "Build & test"
         run: |
-          # yarn test
-          yarn build
+          # npm run test
+          npm run build
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
