@@ -1,0 +1,26 @@
+name: "release"
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  release:
+    name: "Release"
+    # runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Build & test"
+        run: |
+          yarn test
+          yarn build
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          title: "Release Build"
+          files: |
+            LICENSE.txt
+            *.tar.gz
