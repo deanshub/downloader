@@ -16,7 +16,7 @@ jobs:
 
       - name: "Build & test"
         run: |
-          cd downloader/downloader
+          cd downloader
           yarn test
           yarn build
 
