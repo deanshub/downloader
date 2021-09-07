@@ -45,12 +45,16 @@
     "webtorrent": "^1.0.0"
   },
   "devDependencies": {
+    "@swc/core": "^1.2.84",
+    "@swc/jest": "^0.2.2",
     "@types/bytes": "^3.1.0",
     "@types/fs-extra": "^9.0.12",
     "@types/humanize-duration": "^3.25.0",
+    "@types/jest": "^27.0.1",
     "@types/torrent-search-api": "^2.0.0",
     "@types/uuid": "^8.3.0",
     "esbuild-node-tsc": "^1.6.1",
+    "jest": "^27.1.0",
     "nodemon": "^2.0.7",
     "ts-node": "^10.0.0"
   }
