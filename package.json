@@ -4,7 +4,9 @@
   "description": "Torrent Download Telegram Bot",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "etsc",
+    "tsc": "tsc",
+    "clean": "rm -rf build/",
     "start": "node -r dotenv/config build/index.js",
     "dev": "sudo env \"PATH=$PATH\" nodemon",
     "tsnode": "ts-node src/index.ts",
@@ -48,6 +50,7 @@
     "@types/humanize-duration": "^3.25.0",
     "@types/torrent-search-api": "^2.0.0",
     "@types/uuid": "^8.3.0",
+    "esbuild-node-tsc": "^1.6.1",
     "nodemon": "^2.0.7",
     "ts-node": "^10.0.0"
   }
