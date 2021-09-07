@@ -27,6 +27,8 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           title: "Release Build"
+          prerelease: false
           files: |
             LICENSE.txt
             *.tar.gz
+            build/*
