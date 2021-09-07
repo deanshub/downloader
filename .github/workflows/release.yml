@@ -16,7 +16,8 @@ jobs:
 
       - name: "Build & test"
         run: |
-          # yarn test
+          cd downloader/downloader
+          yarn test
           yarn build
 
       - uses: "marvinpinto/action-automatic-releases@latest"
