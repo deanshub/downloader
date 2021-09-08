@@ -89,7 +89,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', downloads)
 
+    let pullInProgrerss = false
     bot.command('pull', async (ctx) => {
+        if (pullInProgrerss) {
+            return
+        }
+        pullInProgrerss = true
         await execa('git', ['reset', '--hard'], {
             cwd: process.cwd(),
         })
@@ -102,9 +107,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             await execa('yarn', {
                 cwd: process.cwd(),
             })
-            return ctx.reply('Pulled')
+            ctx.reply('Pulled')
+        } else {
+            ctx.reply('Already synced')
         }
-        ctx.reply('Already synced')
+        pullInProgrerss = false
     })
 
     bot.command('refresh', async (ctx) => {
