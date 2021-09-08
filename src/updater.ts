@@ -37,7 +37,7 @@ function convertToScheduleerInterval(intervalString: string) {
     const lastLetter = intervalString[intervalString.length - 1]
     const timeFrame = convertLetterToTimeFrame(lastLetter)
     const intervalAmount = Number(
-        intervalString.substring(0, intervalString.length - 2)
+        intervalString.substring(0, intervalString.length - 1)
     )
     if (isNaN(intervalAmount)) {
         throw new Error(
