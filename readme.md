@@ -7,6 +7,7 @@ BOT_TOKEN=<Telegram bot token>
 DOWNLOAD_DIR=<Download directory - default is where the bot runs from>
 TORRENTS_DIR=<Torrent files directory - default is DOWNLOAD_DIR/torrents>
 ADMINS_CHATID=<Telegram chat Ids of admins seperated with comma>
+UPDATE_INTERVAL=<time interval to check for a new release (0 to disable) - default is 1d>
 ```
 
 ## Prebuilt Docker images
