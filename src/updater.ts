@@ -1,8 +1,8 @@
 import { Telegraf, Context } from 'telegraf'
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
 import axios from 'axios'
-import execa from 'execa'
 import { getAdmin } from './bot/isAdmin'
+import { getLatestTagDate } from './git'
 
 export async function setupAutoUpdate(bot: Telegraf<Context>) {
     const scheduler = new ToadScheduler()
@@ -77,6 +77,8 @@ interface Release {
 }
 
 async function checkForUpdate(bot: Telegraf<Context>) {
+    const latstTagDate = await getLatestTagDate()
+
     // TODO: Maybe get the url from env var or origin remote and fallback to deanshub/downloader?
     const latestReleaseUrl = `https://api.github.com/repos/deanshub/downloader/releases?per_page=1`
     const response = await axios.get<Releases>(latestReleaseUrl, {
@@ -86,29 +88,21 @@ async function checkForUpdate(bot: Telegraf<Context>) {
     })
     const latestRelease = response.data?.[0]
 
-    const latstCommitDate = await getLatestCommitDate()
     const releaseDate = latestRelease?.published_at ?? latestRelease?.created_at
     if (
         releaseDate &&
-        latstCommitDate &&
-        new Date(releaseDate).getTime() > latstCommitDate.getTime()
+        latstTagDate &&
+        new Date(releaseDate).getTime() > latstTagDate.getTime()
     ) {
         const releaseVersion = latestRelease?.tag_name ?? latestRelease?.name
 
         bot.telegram.sendMessage(
             getAdmin(),
             `<b>A new version is available ${releaseVersion}</b>\nReleased on ${releaseDate.toLocaleString()}
-Press /pull to update\nRelease notes:\n<pre>${latestRelease?.body ??
-                'No release notes'}</pre>`,
+Press /pull to update\nRelease notes:\n<pre>${
+                latestRelease?.body ?? 'No release notes'
+            }</pre>`,
             { parse_mode: 'HTML' }
         )
     }
-}
-
-async function getLatestCommitDate(): Promise<Date> {
-    'git log -1 --format=%cd'
-    const { stdout } = await execa('git', ['log', '-1', '--format=%cd'], {
-        cwd: process.cwd(),
-    })
-    return new Date(stdout)
 }

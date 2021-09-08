@@ -4205,6 +4205,11 @@ record-cache@^1.0.2:
   resolved "https://registry.yarnpkg.com/record-cache/-/record-cache-1.1.1.tgz#ba3088a489f50491a4af7b14d410822c394fb811"
   integrity sha512-L5hZlgWc7CmGbztnemQoKE1bLu9rtI2skOB0ttE4C5+TVszLE8Rd0YLTROSgvXKLAqPumS/soyN5tJW5wJLmJQ==
 
+regenerator-runtime@^0.13.9:
+  version "0.13.9"
+  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
+  integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
+
 registry-auth-token@^4.0.0:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/registry-auth-token/-/registry-auth-token-4.2.1.tgz#6d7b4006441918972ccd5fedcd41dc322c79b250"

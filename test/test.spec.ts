@@ -1,5 +1,8 @@
-describe('General', () => {
-    test('Test', () => {
-        expect(1 + 1).toBe(2)
+import { getLatestTagDate } from '../src/git'
+describe('git', () => {
+    test('getLatestTagDate', async () => {
+        const latestTagDate = await getLatestTagDate()
+        console.log(latestTagDate)
+        expect(latestTagDate).toBeTruthy()
     })
 })
