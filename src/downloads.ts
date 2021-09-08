@@ -64,6 +64,7 @@ export function cancelDownload(magnet: string): boolean {
     if (torrent) {
         torrent.destroy()
         downloads.delete(torrent)
+        removeTorrent(torrent)
         return true
     }
     return false
