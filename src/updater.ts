@@ -77,7 +77,7 @@ interface Release {
 }
 
 async function checkForUpdate(bot: Telegraf<Context>) {
-    // TODO: Maybe get the url from origin remote and fallback to deanshub/downloader?
+    // TODO: Maybe get the url from env var or origin remote and fallback to deanshub/downloader?
     const latestReleaseUrl = `https://api.github.com/repos/deanshub/downloader/releases?per_page=1`
     const response = await axios.get<Releases>(latestReleaseUrl, {
         headers: {
