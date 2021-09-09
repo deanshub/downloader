@@ -2,7 +2,7 @@ import { Telegraf, Context } from 'telegraf'
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler'
 import axios from 'axios'
 import { getAdmin } from './bot/isAdmin'
-import { getLatestTagDate } from './git'
+import { getLatestCommitDate } from './git'
 
 export async function setupAutoUpdate(bot: Telegraf<Context>) {
     const scheduler = new ToadScheduler()
@@ -75,32 +75,65 @@ interface Release {
     tag_name: string | undefined
     name: string | undefined
 }
-
+type Tags = Tag[]
+interface Tag {
+    name: string
+    zipball_url: string
+    tarball_url: string
+    commit: {
+        sha: string
+        url: string
+    }
+    node_id: string
+}
+interface Commit {
+    commit: {
+        committer: {
+            date: string
+        }
+        author: {
+            date: string
+        }
+    }
+}
 async function checkForUpdate(bot: Telegraf<Context>) {
-    const latstTagDate = await getLatestTagDate()
+    const latstCommitDate = await getLatestCommitDate()
 
     // TODO: Maybe get the url from env var or origin remote and fallback to deanshub/downloader?
     const latestReleaseUrl = `https://api.github.com/repos/deanshub/downloader/releases?per_page=1`
-    const response = await axios.get<Releases>(latestReleaseUrl, {
+    const releaseResponse = await axios.get<Releases>(latestReleaseUrl, {
         headers: {
             Accept: 'application/vnd.github.v3+json',
         },
     })
-    const latestRelease = response.data?.[0]
 
-    const releaseDate = latestRelease?.published_at ?? latestRelease?.created_at
-    if (
-        releaseDate &&
-        latstTagDate &&
-        new Date(releaseDate).getTime() > latstTagDate.getTime()
-    ) {
-        const releaseVersion = latestRelease?.tag_name ?? latestRelease?.name
+    const latestTagsUrl = `https://api.github.com/repos/deanshub/downloader/tags?per_page=1`
+    const tagsResponse = await axios.get<Tags>(latestTagsUrl, {
+        headers: {
+            Accept: 'application/vnd.github.v3+json',
+        },
+    })
+    const latestTag = tagsResponse.data?.[0]
+    const latestCommitUrl = latestTag.commit.url
+    const commitResponse = await axios.get<Commit>(latestCommitUrl, {
+        headers: {
+            Accept: 'application/vnd.github.v3+json',
+        },
+    })
+
+    const releaseCommitDate = new Date(
+        commitResponse.data.commit.committer.date ||
+            commitResponse.data.commit.author.date
+    )
+
+    if (releaseCommitDate.getTime() > latstCommitDate.getTime()) {
+        const releaseVersion = latestTag.name
 
         bot.telegram.sendMessage(
             getAdmin(),
-            `<b>A new version is available ${releaseVersion}</b>\nReleased on ${releaseDate.toLocaleString()}
+            `<b>A new version is available ${releaseVersion}</b>\nReleased on ${releaseCommitDate.toLocaleString()}
 Press /pull to update\nRelease notes:\n<pre>${
-                latestRelease?.body ?? 'No release notes'
+                releaseResponse.data?.[0]?.body ?? 'No release notes'
             }</pre>`,
             { parse_mode: 'HTML' }
         )

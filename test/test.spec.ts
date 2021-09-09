@@ -1,8 +1,7 @@
-import { getLatestTagDate } from '../src/git'
+import { getLatestCommitDate } from '../src/git'
 describe('git', () => {
-    test('getLatestTagDate', async () => {
-        const latestTagDate = await getLatestTagDate()
-        console.log(latestTagDate)
+    test('getLatestCommitDate', async () => {
+        const latestTagDate = await getLatestCommitDate()
         expect(latestTagDate).toBeTruthy()
     })
 })
