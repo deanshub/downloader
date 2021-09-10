@@ -2,7 +2,7 @@ import { Telegraf, Context } from 'telegraf'
 import { Update } from 'typegram'
 import execa from 'execa'
 import { set, get } from '../cbData'
-import { download, cancelDownload } from '../downloads'
+import { download, cancelDownload } from '../torrents'
 import { searchTorrents } from '../search'
 import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
 import { defaultExtra } from './keyboard'
@@ -34,18 +34,21 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
         const magnetURI = getCommandText('download', ctx.message.text)
         const torrent = await download(magnetURI)
-        torrent.on('done', async () => {
-            ctx.reply(`${torrent.name} Downloaded`)
-            await refreshDlna()
-        })
-        torrent.on('error', (e) => {
-            ctx.replyWithHTML(
-                `<b>${stripHtml(
-                    torrent.name
-                )}</b> failed to download</b>\n${stripHtml(e.toString())}`
-            )
-        })
-        ctx.reply(`Downloading ${torrent.name}`, defaultExtra)
+        torrent
+            .on('done', async () => {
+                ctx.reply(`${torrent.name} Downloaded`)
+                await refreshDlna()
+            })
+            .on('error', (e) => {
+                ctx.replyWithHTML(
+                    `<b>${stripHtml(
+                        torrent.name
+                    )}</b> failed to download</b>\n${stripHtml(e.toString())}`
+                )
+            })
+            .on('ready', () => {
+                downloads(ctx, torrent.infoHash)
+            })
     })
 
     bot.command('search', (ctx) => search(ctx, 'search'))
@@ -64,15 +67,20 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         if (cbData) {
             if (cbData.type === 'download') {
                 const torrent = await download(cbData.data)
-                torrent.on('done', () => {
-                    ctx.reply(`${torrent.name} Downloaded`)
-                })
-                torrent.on('error', (e) => {
-                    ctx.reply(
-                        `${torrent.name} Failed to download\n${e.toString()}`
-                    )
-                })
-                ctx.reply(`Downloading ${torrent.name}`, defaultExtra)
+                torrent
+                    .on('done', () => {
+                        ctx.reply(`${torrent.name} Downloaded`)
+                    })
+                    .on('error', (e) => {
+                        ctx.reply(
+                            `${
+                                torrent.name
+                            } Failed to download\n${e.toString()}`
+                        )
+                    })
+                    .on('ready', () => {
+                        downloads(ctx, torrent.infoHash)
+                    })
             } else if (cbData.type === 'cancel') {
                 if (cancelDownload(cbData.data)) {
                     ctx.reply(`Canceled`, defaultExtra)
@@ -88,7 +96,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
-    bot.command('downloads', downloads)
+    bot.command('downloads', async (ctx) => downloads(ctx))
 
     let pullInProgrerss = false
     bot.command('pull', async (ctx) => {

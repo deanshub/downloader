@@ -1,5 +1,6 @@
 {
-  "ext": "ts,json",
-  "ignore": ["src/**/*.spec.ts", "build"],
-  "exec": "ts-node -r dotenv/config ./src/index.ts"
+    "ext": "ts,json",
+    "ignore": ["src/**/*.spec.ts", "build"],
+    "exec": "ts-node -r dotenv/config ./src/index.ts",
+    "delay": 2500
 }

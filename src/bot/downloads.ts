@@ -1,4 +1,4 @@
-import { getCurrent, Download } from '../downloads'
+import { getCurrent, Download } from '../torrents'
 import { set } from '../cbData'
 import { Context } from 'telegraf'
 import {
@@ -9,18 +9,25 @@ import { defaultExtra } from './keyboard'
 import { progressBar } from './progressBarText'
 import { stripHtml } from '../stripHtml'
 
-export async function downloads(ctx: Context<Update>): Promise<void> {
-    const downloads = getCurrent()
-    downloads.forEach((download) => {
-        ctx.replyWithHTML(stringifyDownload(download), {
-            reply_markup: {
-                ...getReplyMarkupForDownload(download),
-                remove_keyboard: true,
-                resize_keyboard: true,
-            },
+export async function downloads(
+    ctx: Context<Update>,
+    filter?: string
+): Promise<void> {
+    const currentDownloads = getCurrent()
+    currentDownloads
+        .filter((download) => {
+            filter ? download.id === filter : true
         })
-    })
-    if (downloads.length === 0) {
+        .forEach((download) => {
+            ctx.replyWithHTML(stringifyDownload(download), {
+                reply_markup: {
+                    ...getReplyMarkupForDownload(download),
+                    remove_keyboard: true,
+                    resize_keyboard: true,
+                },
+            })
+        })
+    if (currentDownloads.length === 0) {
         ctx.reply('There are no current downloads', defaultExtra)
     }
 }

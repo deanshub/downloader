@@ -7,6 +7,7 @@
     "scripts": {
         "build": "npm run clean && ts-node scripts/build.ts",
         "tsc": "tsc",
+        "watch": "tsc -w",
         "clean": "rm -rf build/",
         "start": "node -r dotenv/config build/index.js",
         "dev": "sudo env \"PATH=$PATH\" nodemon",
