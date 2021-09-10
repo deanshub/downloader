@@ -8,8 +8,13 @@ export async function setupAutoUpdate(bot: Telegraf<Context>) {
     const scheduler = new ToadScheduler()
     const task = new AsyncTask(
         'check for new release',
-        () => {
-            return checkForUpdate(bot)
+        async () => {
+            const updateMessage = await checkForUpdate()
+            if (updateMessage) {
+                bot.telegram.sendMessage(getAdmin(), updateMessage, {
+                    parse_mode: 'HTML',
+                })
+            }
         },
         (err: Error) => {
             bot.telegram.sendMessage(
@@ -96,7 +101,7 @@ interface Commit {
         }
     }
 }
-async function checkForUpdate(bot: Telegraf<Context>) {
+export async function checkForUpdate(): Promise<string | null> {
     const latstCommitDate = await getLatestCommitDate()
 
     // TODO: Maybe get the url from env var or origin remote and fallback to deanshub/downloader?
@@ -129,13 +134,10 @@ async function checkForUpdate(bot: Telegraf<Context>) {
     if (releaseCommitDate.getTime() > latstCommitDate.getTime()) {
         const releaseVersion = latestTag.name
 
-        bot.telegram.sendMessage(
-            getAdmin(),
-            `<b>A new version is available ${releaseVersion}</b>\nReleased on ${releaseCommitDate.toLocaleString()}
-Press /pull to update\nRelease notes:\n<pre>${
-                releaseResponse.data?.[0]?.body ?? 'No release notes'
-            }</pre>`,
-            { parse_mode: 'HTML' }
-        )
+        return `<b>A new version is available ${releaseVersion}</b>\nReleased on ${releaseCommitDate.toLocaleString()}
+        Press /pull to update\nRelease notes:\n<pre>${
+            releaseResponse.data?.[0]?.body ?? 'No release notes'
+        }</pre>`
     }
+    return null
 }

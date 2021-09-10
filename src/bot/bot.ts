@@ -8,6 +8,7 @@ import { isAdmin, setupAdmins, getAdmin } from './isAdmin'
 import { defaultExtra } from './keyboard'
 import { downloads, handleRefreshCall } from './downloads'
 import { stripHtml } from '../stripHtml'
+import { checkForUpdate } from '../updater'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -117,6 +118,14 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
         return ctx.reply('Refreshed')
+    })
+    bot.command('check', async (ctx) => {
+        const updateMessage = await checkForUpdate()
+        if (updateMessage) {
+            ctx.reply(updateMessage, { parse_mode: 'HTML' })
+        } else {
+            ctx.reply(`No updates available`)
+        }
     })
 
     bot.launch()
