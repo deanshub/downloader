@@ -1,4 +1,4 @@
-import { Telegraf, Context } from 'telegraf'
+import { Context } from 'telegraf'
 
 let admins: number[] = []
 

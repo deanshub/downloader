@@ -7,11 +7,12 @@ async function build(): Promise<void> {
         bundle: true,
         format: 'cjs',
         platform: 'node',
-        minify: true,
+        // minify: true,
         logLevel: 'silent',
         outdir: tsconfig.compilerOptions.outDir,
         entryPoints: [`src/${pkg.module}`],
         target: [tsconfig.compilerOptions.target],
+        external: ['webtorrent', 'torrent-search-api'],
     })
 }
 build()
