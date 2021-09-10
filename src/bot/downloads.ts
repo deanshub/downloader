@@ -11,13 +11,11 @@ import { stripHtml } from '../stripHtml'
 
 export async function downloads(
     ctx: Context<Update>,
-    filter?: string
+    filteredId?: string
 ): Promise<void> {
     const currentDownloads = getCurrent()
     currentDownloads
-        .filter((download) => {
-            filter ? download.id === filter : true
-        })
+        .filter((download) => (filteredId ? download.id === filteredId : true))
         .forEach((download) => {
             ctx.replyWithHTML(stringifyDownload(download), {
                 reply_markup: {
