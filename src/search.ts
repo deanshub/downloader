@@ -39,28 +39,36 @@ export async function searchTorrents(
     // torrents.push(...priateBayResults)
     // console.log('pb',torrents.length)
 
-    let providerIndex = 0
-    while (torrents.length < limit && providerIndex < publicProviders.length) {
-        const curTorrents = await searchTorrentsUsingTorrentSearchApi(
-            publicProviders[providerIndex].name,
-            term,
-            category,
-            limit
-        )
-        torrents.push(...curTorrents)
-        providerIndex++
-    }
+    // let providerIndex = 0
+    // while (torrents.length < limit && providerIndex < publicProviders.length) {
+    //     const curTorrents = await searchTorrentsUsingTorrentSearchApi(
+    //         publicProviders[providerIndex].name,
+    //         term,
+    //         category,
+    //         limit
+    //     )
+    //     torrents.push(...curTorrents)
+    //     providerIndex++
+    // }
+
+    const curTorrents = await searchTorrentsUsingTorrentSearchApi(
+        publicProviders.map(p=>p.name),
+        term,
+        category,
+        limit*2
+    )
+    torrents.push(...curTorrents.slice(0, limit))
     return torrents
 }
 
 async function searchTorrentsUsingTorrentSearchApi(
-    provider: string,
+    provider: string|string[],
     term: string,
     category: string,
     limit: number
 ): Promise<SearchResults[]> {
     const torrents = await TorrentSearchApi.search(
-        [provider],
+        Array.isArray(provider)?provider:[provider],
         term,
         category,
         limit
