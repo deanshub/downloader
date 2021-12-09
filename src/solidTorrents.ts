@@ -31,8 +31,8 @@ export async function searchSolid(term: string): Promise<SolidResults[]> {
         const response = await axios.get<{ results: SolidResults[] }>(fullUrl)
         return response.data.results
     } catch (e) {
+        // console.warn(e)
         console.warn("Can't find solid torrents")
-        console.warn(e)
         return []
     }
 }

@@ -8,6 +8,9 @@ const publicProviders = providers.filter((provider) => {
     // @ts-ignore
     return provider.public
 })
+publicProviders.forEach(provider=>{
+    TorrentSearchApi.enableProvider(provider.name)
+})
 
 export interface SearchResults {
     title: string
@@ -31,8 +34,10 @@ export async function searchTorrents(
         seeders: t.swarm.seeders
     }))
 
-    const priateBayResults = await searchPirateBay(term, category)
-    torrents.push(...priateBayResults)
+    // console.log('solid',torrents.length)
+    // const priateBayResults = await searchPirateBay(term, category)
+    // torrents.push(...priateBayResults)
+    // console.log('pb',torrents.length)
 
     let providerIndex = 0
     while (torrents.length < limit && providerIndex < publicProviders.length) {
@@ -63,7 +68,8 @@ async function searchTorrentsUsingTorrentSearchApi(
         console.warn(e)
         return []
     })
-    return await Promise.all(
+
+    const fullResults = await Promise.allSettled(
         torrents.map(async (torrent: TorrentSearchApi.Torrent, index, torrents) => {
             const magnet = await TorrentSearchApi.getMagnet(torrent)
             
@@ -76,10 +82,18 @@ async function searchTorrentsUsingTorrentSearchApi(
             }
         })
     )
+
+    // @ts-expect-error
+    return fullResults.filter(r=>r.status==='fulfilled').map(r=>r.value)
 }
+
 async function searchPirateBay(term: string, category: string): Promise<SearchResults[]> {
     const priateBayResults = await PirateBay.search(term, {
         category,
+    }).catch(e=>{
+        console.warn(e)
+        console.error('Can\'t search pirate bay')
+        return []
     })
 
     const results: SearchResults[] = priateBayResults.map(r=>({
