@@ -136,6 +136,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
     })
 
+    bot.command('kill', async (ctx) => {
+        bot.stop()
+        setupBot()
+    })
+
     bot.launch()
 
     // Enable graceful stop
@@ -153,7 +158,7 @@ async function search(ctx: Context<Update>, command: string) {
     const searchTerm = getCommandText(command, ctx.message.text)
     const category = command === 'movies' ? 'Movies' : undefined
     const torrents = await searchTorrents(searchTerm, category)
-    torrents.forEach(async (torrent) => {
+    torrents.sort((a,b)=>a.seeders-b.seeders).forEach(async (torrent) => {
         const key = set({ data: torrent.magnet, type: 'download' })
         ctx.replyWithMarkdown(`*${torrent.size}*\n${torrent.title}`, {
             reply_markup: {

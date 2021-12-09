@@ -5,3 +5,4 @@ movies - search movies torrents
 refresh - reset dlna service
 pull - pull updates for the repo
 check - check if a new version is out
+kill - kill the bot

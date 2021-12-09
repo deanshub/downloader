@@ -13,6 +13,7 @@ export interface SearchResults {
     desc: string
     size: string
     magnet: string
+    seeders: number
 }
 
 export async function searchTorrents(
@@ -26,6 +27,7 @@ export async function searchTorrents(
         desc: `https://solidtorrents.net/view/${encodeURIComponent(t.title)}/${t._id}`,
         size: bytes(t.size),
         magnet: t.magnet,
+        seeders: t.swarm.seeders
     }))
 
     let providerIndex = 0
@@ -58,13 +60,15 @@ async function searchTorrentsUsingTorrentSearchApi(
         return []
     })
     return await Promise.all(
-        torrents.map(async (torrent: TorrentSearchApi.Torrent) => {
+        torrents.map(async (torrent: TorrentSearchApi.Torrent, index, torrents) => {
             const magnet = await TorrentSearchApi.getMagnet(torrent)
+            
             return {
                 title: torrent.title,
                 desc: torrent.desc,
                 size: torrent.size,
                 magnet,
+                seeders: torrents.length-index
             }
         })
     )
