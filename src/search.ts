@@ -1,4 +1,5 @@
 import TorrentSearchApi from 'torrent-search-api'
+import PirateBay from 'thepiratebay'
 import { searchSolid } from './solidTorrents'
 import bytes from 'bytes'
 
@@ -29,6 +30,9 @@ export async function searchTorrents(
         magnet: t.magnet,
         seeders: t.swarm.seeders
     }))
+
+    const priateBayResults = await searchPirateBay(term, category)
+    torrents.push(...priateBayResults)
 
     let providerIndex = 0
     while (torrents.length < limit && providerIndex < publicProviders.length) {
@@ -73,3 +77,19 @@ async function searchTorrentsUsingTorrentSearchApi(
         })
     )
 }
+async function searchPirateBay(term: string, category: string): Promise<SearchResults[]> {
+    const priateBayResults = await PirateBay.search(term, {
+        category,
+    })
+
+    const results: SearchResults[] = priateBayResults.map(r=>({
+        title: r.name,
+        desc: r.link,
+        size: r.size,
+        magnet: r.magnetLink,
+        seeders: Number(r.seeders)
+    }))
+
+    return results
+}
+
