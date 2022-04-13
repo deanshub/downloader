@@ -160,7 +160,7 @@ async function search(ctx: Context<Update>, command: string) {
     const torrents = await searchTorrents(searchTerm, category)
     torrents.sort((a,b)=>a.seeders-b.seeders).forEach(async (torrent) => {
         const key = set({ data: torrent.magnet, type: 'download' })
-        ctx.replyWithHTML(`<b>${torrent.size}</b><br/>${torrent.title}`, {
+        ctx.replyWithHTML(`<b>${torrent.size}</b>\n${stripHtml(torrent.title)}`, {
             reply_markup: {
                 inline_keyboard: [
                     [
