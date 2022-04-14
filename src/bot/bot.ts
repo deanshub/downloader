@@ -9,6 +9,7 @@ import { defaultExtra } from './keyboard'
 import { downloads, handleRefreshCall } from './downloads'
 import { stripHtml } from '../stripHtml'
 import { checkForUpdate } from '../updater'
+import { getStorageDetails } from '../getStorageDetails'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -139,6 +140,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('kill', async (ctx) => {
         bot.stop()
         setupBot()
+    })
+
+    bot.command('storage', async (ctx) => {
+        const storageDetails = await getStorageDetails()
+        ctx.replyWithHTML(`<b>${storageDetails.freePercentage}%</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`)
     })
 
     bot.launch()
