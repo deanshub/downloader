@@ -144,7 +144,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
     bot.command('storage', async (ctx) => {
         const storageDetails = await getStorageDetails()
-        ctx.replyWithHTML(`<b>${storageDetails.freePercentage}%</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`)
+        ctx.replyWithHTML(`<b>${storageDetails.freeSpace} (${storageDetails.freePercentage}%)</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`)
     })
 
     bot.launch()
