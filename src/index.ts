@@ -8,5 +8,6 @@ async function init(): Promise<void> {
     setupAutoUpdate(bot)
 }
 
-process.on('uncaughtException', console.error)
-init().catch(console.error)
+// process.on('uncaughtException', console.error)
+init()
+// .catch(console.error)
