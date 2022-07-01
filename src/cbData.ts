@@ -1,10 +1,16 @@
 import { v4 as uuidv4 } from 'uuid'
+import LRU from 'lru-cache'
+
+const lruOptions = {
+    max: 500,
+    ttl: 1000 * 60 * 60,
+}
 
 export interface CbData {
     type: 'download' | 'cancel' | 'refresh'
     data: string
 }
-const cache = new Map<string, CbData>()
+const cache = new LRU<string, CbData>(lruOptions)
 
 export function set(cbdata: CbData): string {
     const key = uuidv4()
