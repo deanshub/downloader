@@ -23,7 +23,7 @@ export async function downloads(
                     remove_keyboard: true,
                     resize_keyboard: true,
                 },
-            })
+            }).catch(console.warn)
         })
     if (currentDownloads.length === 0) {
         ctx.reply('There are no current downloads', defaultExtra)
