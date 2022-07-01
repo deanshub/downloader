@@ -1,9 +1,9 @@
 downloads - show current downloads
-download - downloads a magnet uri
 search - search any torrent
-movies - search movies torrents
+download - downloads a magnet uri
 refresh - reset dlna service
 pull - pull updates for the repo
 check - check if a new version is out
 kill - kill the bot
 storage - show available storage
+memory - show memory status

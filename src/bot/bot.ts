@@ -10,6 +10,7 @@ import { downloads, handleRefreshCall } from './downloads'
 import { stripHtml } from '../stripHtml'
 import { checkForUpdate } from '../updater'
 import { getStorageDetails } from '../getStorageDetails'
+import { getMemoryDetails } from '../getMemoryDetails'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -146,6 +147,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         const storageDetails = await getStorageDetails()
         ctx.replyWithHTML(`<b>${storageDetails.freeSpace} (${storageDetails.freePercentage}%)</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`)
     })
+
+    bot.command('memory', async (ctx) => {
+        const memoryDetails = await getMemoryDetails()
+        ctx.replyWithHTML(`<b>${memoryDetails.processMemoryString}</b> Used\nHeap ${memoryDetails.heapUsedString} used (${memoryDetails.heapPercentageString})`)
+    })
+
 
     bot.launch()
 
