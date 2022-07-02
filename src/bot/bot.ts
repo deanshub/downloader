@@ -11,6 +11,7 @@ import { stripHtml } from '../stripHtml'
 import { checkForUpdate } from '../updater'
 import { getStorageDetails } from '../getStorageDetails'
 import { getMemoryDetails } from '../getMemoryDetails'
+import { getFiles, messageForFile } from '../downloadedFiles'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -161,6 +162,44 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         ctx.replyWithHTML(`<b>${memoryDetails.processMemoryString}</b> Used\nHeap ${memoryDetails.heapUsedString} used (${memoryDetails.heapPercentageString})`)
     })
 
+    bot.command('files', async (ctx) => {
+        const files = await getFiles()
+        const storageDetails = await getStorageDetails()
+        // ctx.replyWithHTML(`<b>${storageDetails.takenSpace}</b>\n${files.map(messageForFile).join('\n')}`)
+        await Promise.all(files.map(async file=>{
+            await ctx.replyWithHTML(messageForFile(file),{
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: '❌ Delete',
+                                callback_data: ''
+                            }
+                        ]
+                    ],
+                    remove_keyboard: true,
+                }
+            }).catch(console.warn)
+        }))
+        await ctx.replyWithHTML(`Page 1`,{
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: '⏮️ Previous',
+                            callback_data: '1'
+                        },
+                        {
+                            text: 'Next ⏭️',
+                            callback_data: '2'
+                        },
+                    ]
+                ],
+                remove_keyboard: true,
+            }
+        }).catch(console.warn)
+        // next prev
+    })
 
     bot.launch()
 

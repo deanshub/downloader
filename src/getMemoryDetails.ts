@@ -1,5 +1,4 @@
 import process from "process";
-// @ts-expect-error
 import prettysize from 'prettysize'
 
 interface MemoryDetails{

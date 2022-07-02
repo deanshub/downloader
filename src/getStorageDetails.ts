@@ -1,5 +1,4 @@
 import checkDiskSpace from 'check-disk-space'
-// @ts-expect-error
 import prettysize from 'prettysize'
 
 const downloadsDir = process.env.DOWNLOAD_DIR ?? process.cwd()
