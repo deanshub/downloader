@@ -3,8 +3,8 @@ import { loadFromTorrentsDir } from './torrents'
 import { setupAutoUpdate } from './updater'
 
 async function init(): Promise<void> {
-    await loadFromTorrentsDir()
     const bot = await setupBot()
+    await loadFromTorrentsDir(bot)
     setupAutoUpdate(bot)
 }
 
