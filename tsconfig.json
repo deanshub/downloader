@@ -11,5 +11,8 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true
     },
-    "include": ["external-modules.d.ts", "src/**/*", "src/**/*.json", "./scripts/*", "package.json"]
+    "files": [
+        "external-modules.d.ts"
+    ],
+    "include": ["src/**/*", "src/**/*.json", "./scripts/*", "package.json"]
 }

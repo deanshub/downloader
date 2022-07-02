@@ -1,1 +1,1 @@
-declare module 'prettysize'
+declare module 'prettysize';
