@@ -11,7 +11,7 @@ import { stripHtml } from '../stripHtml'
 import { checkForUpdate } from '../updater'
 import { getStorageDetails } from '../getStorageDetails'
 import { getMemoryDetails } from '../getMemoryDetails'
-import { getFiles, messageForFile } from '../downloadedFiles'
+import { deleteFile, filesCommand } from '../downloadedFiles'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -65,8 +65,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             )
             return
         }
-        // @ts-ignore
-        const cbData = get(ctx.callbackQuery.data)
+
+        const callbackOriginalData = (ctx.callbackQuery as {data: string}).data
+        
+        const cbData = get(callbackOriginalData)
         if (cbData) {
             if (cbData.type === 'download') {
                 try {
@@ -98,6 +100,15 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             } else if (cbData.type === 'refresh') {
                 await handleRefreshCall(cbData.data, ctx)
             }
+        } else if (callbackOriginalData === 'delete') {
+            deleteFile((ctx.callbackQuery.message as {text: string}).text).then(() => {
+                ctx.answerCbQuery('Deleted')
+            }, (e) => {
+                ctx.reply(`Couldn't delete file\n${e.toString()}`, defaultExtra)
+            })
+        } else if (/^filesPage\d+/.test(callbackOriginalData)) {
+            const page = parseInt(callbackOriginalData.replace('filesPage', ''))
+            filesCommand(ctx, page)
         } else {
             ctx.reply(`Can't, please try later`, defaultExtra)
         }
@@ -163,42 +174,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('files', async (ctx) => {
-        const files = await getFiles()
-        const storageDetails = await getStorageDetails()
-        // ctx.replyWithHTML(`<b>${storageDetails.takenSpace}</b>\n${files.map(messageForFile).join('\n')}`)
-        await Promise.all(files.map(async file=>{
-            await ctx.replyWithHTML(messageForFile(file),{
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: '❌ Delete',
-                                callback_data: ''
-                            }
-                        ]
-                    ],
-                    remove_keyboard: true,
-                }
-            }).catch(console.warn)
-        }))
-        await ctx.replyWithHTML(`Page 1`,{
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: '⏮️ Previous',
-                            callback_data: '1'
-                        },
-                        {
-                            text: 'Next ⏭️',
-                            callback_data: '2'
-                        },
-                    ]
-                ],
-                remove_keyboard: true,
-            }
-        }).catch(console.warn)
-        // next prev
+        await filesCommand(ctx, 0)
     })
 
     bot.launch()
