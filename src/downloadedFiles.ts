@@ -42,11 +42,11 @@ async function getFiles(
 }
 
 function messageForFile(file: DownloadedFile): string {
-    return `${file.name} ${file.isDirectory ? '📁' : '📄'}`
+    return `${file.isDirectory ? '📁' : '📄'} ${file.name}`
 }
 
 export async function deleteFile(filePath: string): Promise<void>{
-    const clearedFilePath = filePath.replace(/ 📁$/, '').replace(/ 📄$/, '')
+    const clearedFilePath = filePath.replace(/^📁 /, '').replace(/^📄 /, '')
     const downloadDir = process.env.DOWNLOAD_DIR ?? process.cwd()
     await fs.unlink(path.join(downloadDir, clearedFilePath))
 }
