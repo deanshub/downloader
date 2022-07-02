@@ -68,21 +68,26 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         const cbData = get(ctx.callbackQuery.data)
         if (cbData) {
             if (cbData.type === 'download') {
-                const torrent = await download(cbData.data)
-                torrent
-                    .on('done', () => {
-                        ctx.reply(`${torrent.name} Downloaded`)
-                    })
-                    .on('error', (e) => {
-                        ctx.reply(
-                            `${
-                                torrent.name
-                            } Failed to download\n${e.toString()}`
-                        )
-                    })
-                    .on('ready', () => {
-                        downloads(ctx, torrent.infoHash)
-                    })
+                try {
+                    const torrent = await download(cbData.data)
+                    torrent
+                        .on('done', () => {
+                            ctx.reply(`${torrent.name} Downloaded`).catch(console.warn)
+                        })
+                        .on('error', (e) => {
+                            ctx.reply(
+                                `${
+                                    torrent.name
+                                } Failed to download\n${e.toString()}`
+                            ).catch(console.warn)
+                        })
+                        .on('ready', () => {
+                            downloads(ctx, torrent.infoHash)
+                        })
+                } catch (error) {
+                    console.error(error)
+                    ctx.reply(`Can't, please try later`, defaultExtra)
+                }
             } else if (cbData.type === 'cancel') {
                 if (cancelDownload(cbData.data)) {
                     ctx.reply(`Canceled`, defaultExtra)
