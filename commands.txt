@@ -7,3 +7,4 @@ check - check if a new version is out
 kill - kill the bot
 storage - show available storage
 memory - show memory status
+reset - reset the bot
