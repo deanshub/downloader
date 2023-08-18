@@ -10,7 +10,9 @@ export async function update(){
         }
         pullInProgrerss = true
         // kill process of yarn update which is not this process
-        const { stdout: pid } = await execa('pidof', ['yarn'], {
+        // const { stdout: pid } = await execa('pidof', ['yarn'], {
+        const { stdout: pid } = await execa('pidof yarn', {
+            shell: true,
             cwd: process.cwd(),
             stdio: 'pipe',
         })

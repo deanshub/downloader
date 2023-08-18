@@ -10,7 +10,8 @@
         "watch": "tsc -w",
         "clean": "rm -rf build/",
         "start": "node -r dotenv/config build/index.js",
-        "dev": "sudo env \"PATH=$PATH\" nodemon",
+        "god": "sudo env \"PATH=$PATH\" nodemon",
+        "dev": "nodemon",
         "tsnode": "ts-node src/index.ts",
         "update": "ts-node scripts/update.ts",
         "test": "jest"
