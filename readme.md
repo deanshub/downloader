@@ -1,5 +1,7 @@
 # Telegram bot that downloads torrents
 
+make sure you have minidlna installed (or some other kind of dlna to stream DOWNLOAD_DIR)
+
 please add a .env file in the root with the following
 
 ```
