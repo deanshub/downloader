@@ -20,6 +20,7 @@ export async function update(){
         })
 
         pullInProgrerss = false
+        console.log({stdout})
         if (stdout !== 'Already up to date.') {
             await execa('yarn', {
                 cwd: process.cwd(),
