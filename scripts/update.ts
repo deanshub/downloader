@@ -11,18 +11,11 @@ export async function update(){
         pullInProgrerss = true
         // kill process of yarn update which is not this process
         // const { stdout: pid } = await execa('pidof', ['yarn'], {
-        let pid
-        try {
-            const { stdout } = await execa('pidof yarn', {
-                shell: true,
-                cwd: process.cwd(),
-                stdio: 'pipe',
-                uid: process.getuid?.(),
-            })
-            pid = stdout
-        } catch (error) {
-            console.error(error)
-        }
+        const { stdout: pid } = await execa('pidof yarn', {
+            shell: true,
+            cwd: process.cwd(),
+            stdio: 'pipe',
+        })
         const currentProcessId = process.pid.toString()
         if (pid && pid !== currentProcessId) {
             await execa('kill', [pid], {
