@@ -121,18 +121,18 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('pull', async (ctx) => {
         // check if there are newer commits
         // if so than run a new process that resets, pulls, yarn, and starts + kill current process
-        const newCommitExists = await checkForNewCommit()
+        // const newCommitExists = await checkForNewCommit()
 
-        if (newCommitExists) {
+        // if (newCommitExists) {
             ctx.reply('Updating...')
             execa('yarn', ['update'], {
                 cwd: process.cwd(),
                 detached: true,
             })
             process.exit(0)
-        } else {
-            ctx.reply('Already up to date')
-        }
+        // } else {
+        //     ctx.reply('Already up to date')
+        // }
     })
 
     bot.command('refresh', async (ctx) => {
