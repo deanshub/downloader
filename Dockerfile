@@ -4,6 +4,7 @@ WORKDIR /app
 
 ADD package.json /app/
 ADD .yarn /app/.yarn
+ADD .yarnrc.yml /app/
 ADD yarn.lock /app/
 
 RUN yarn --frozen-lockfile
