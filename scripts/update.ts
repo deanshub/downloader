@@ -15,6 +15,7 @@ export async function update(){
             shell: true,
             cwd: process.cwd(),
             stdio: 'pipe',
+            uid: process.getuid?.(),
         })
         const currentProcessId = process.pid.toString()
         if (pid !== currentProcessId) {
