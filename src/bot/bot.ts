@@ -124,18 +124,19 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         // const newCommitExists = await checkForNewCommit()
 
         // if (newCommitExists) {
-        ctx.reply('Updating...')
-        const currentUid = process.getuid?.() ?? 0
-        execa('yarn', ['update'], {
-            cwd: process.cwd(),
-            stdio: 'inherit',
-            detached: true,
-            uid: currentUid,
-        })
+        // ctx.reply('Updating...')
+        // const currentUid = process.getuid?.() ?? 0
+        // execa('yarn', ['update'], {
+        //     cwd: process.cwd(),
+        //     stdio: 'inherit',
+        //     detached: true,
+        //     uid: currentUid,
+        // })
         // process.exit(0)
         // } else {
-        //     ctx.reply('Already up to date')
+            // ctx.reply('Already up to date')
         // }
+        ctx.reply('to be fixed...')
     })
 
     bot.command('refresh', async (ctx) => {
