@@ -16,7 +16,7 @@ export async function update(){
 
         const { stdout } = await execa('git', ['pull'], {
             cwd: process.cwd(),
-            stdio: 'inherit',
+            stdio: 'pipe',
         })
 
         pullInProgrerss = false
