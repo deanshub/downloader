@@ -24,7 +24,6 @@ export async function update(){
             })
         }
 
-
         await execa('git', ['reset', '--hard'], {
             cwd: process.cwd(),
             stdio: 'inherit',

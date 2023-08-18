@@ -125,10 +125,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
         // if (newCommitExists) {
         ctx.reply('Updating...')
+        const currentUid = process.getuid?.() ?? 0
         execa('yarn', ['update'], {
             cwd: process.cwd(),
             stdio: 'inherit',
             detached: true,
+            uid: currentUid,
         })
         // process.exit(0)
         // } else {
