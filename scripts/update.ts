@@ -11,21 +11,25 @@ export async function update(){
         pullInProgrerss = true
         await execa('git', ['reset', '--hard'], {
             cwd: process.cwd(),
+            stdio: 'inherit',
         })
 
         const { stdout } = await execa('git', ['pull'], {
             cwd: process.cwd(),
+            stdio: 'inherit',
         })
 
         pullInProgrerss = false
         if (stdout !== 'Already up to date.') {
             await execa('yarn', {
                 cwd: process.cwd(),
+                stdio: 'inherit',
             })
         }
 
         await execa('yarn', ['dev'], {
             cwd: process.cwd(),
+            stdio: 'inherit',
             detached: true,
         })
         process.exit(0)
