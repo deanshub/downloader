@@ -124,12 +124,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         // const newCommitExists = await checkForNewCommit()
 
         // if (newCommitExists) {
-            ctx.reply('Updating...')
-            execa('yarn', ['update'], {
-                cwd: process.cwd(),
-                detached: true,
-            })
-            process.exit(0)
+        ctx.reply('Updating...')
+        execa('yarn', ['update'], {
+            cwd: process.cwd(),
+            detached: true,
+        })
+        // process.exit(0)
         // } else {
         //     ctx.reply('Already up to date')
         // }

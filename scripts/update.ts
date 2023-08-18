@@ -9,6 +9,20 @@ export async function update(){
             return
         }
         pullInProgrerss = true
+        // kill process of yarn update which is not this process
+        const { stdout: pid } = await execa('pidof', ['yarn'], {
+            cwd: process.cwd(),
+            stdio: 'pipe',
+        })
+        const currentProcessId = process.pid.toString()
+        if (pid !== currentProcessId) {
+            await execa('kill', [pid], {
+                cwd: process.cwd(),
+                stdio: 'inherit',
+            })
+        }
+
+
         await execa('git', ['reset', '--hard'], {
             cwd: process.cwd(),
             stdio: 'inherit',
