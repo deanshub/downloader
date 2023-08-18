@@ -17,7 +17,7 @@ export async function update(){
             stdio: 'pipe',
         })
         const currentProcessId = process.pid.toString()
-        if (pid && pid !== currentProcessId) {
+        if (pid !== currentProcessId) {
             await execa('kill', [pid], {
                 cwd: process.cwd(),
                 stdio: 'inherit',
