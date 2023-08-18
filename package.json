@@ -12,6 +12,7 @@
         "start": "node -r dotenv/config build/index.js",
         "dev": "sudo env \"PATH=$PATH\" nodemon",
         "tsnode": "ts-node src/index.ts",
+        "update": "ts-node scripts/update.ts",
         "test": "jest"
     },
     "repository": {

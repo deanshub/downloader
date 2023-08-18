@@ -117,29 +117,22 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', async (ctx) => downloads(ctx))
 
-    let pullInProgrerss = false
+    // let pullInProgrerss = false
     bot.command('pull', async (ctx) => {
-        if (pullInProgrerss) {
-            return
-        }
-        pullInProgrerss = true
-        await execa('git', ['reset', '--hard'], {
-            cwd: process.cwd(),
-        })
+        // check if there are newer commits
+        // if so than run a new process that resets, pulls, yarn, and starts + kill current process
+        const newCommitExists = await checkForNewCommit()
 
-        const { stdout } = await execa('git', ['pull'], {
-            cwd: process.cwd(),
-        })
-
-        if (stdout !== 'Already up to date.') {
-            await execa('yarn', {
+        if (newCommitExists) {
+            ctx.reply('Updating...')
+            execa('yarn', ['update'], {
                 cwd: process.cwd(),
+                detached: true,
             })
-            ctx.reply('Pulled')
+            process.exit(0)
         } else {
-            ctx.reply('Already synced')
+            ctx.reply('Already up to date')
         }
-        pullInProgrerss = false
     })
 
     bot.command('refresh', async (ctx) => {
@@ -226,4 +219,15 @@ async function refreshDlna(): Promise<void> {
     await execa('sudo', ['service', 'minidlna', 'restart'], {
         cwd: process.cwd(),
     })
+}
+
+async function checkForNewCommit() {
+    // fetch and see if you need to pull
+    const { stdout } = await execa('git', ['fetch'], {
+        cwd: process.cwd(),
+    })
+    if (stdout !== 'Already up to date.') {
+        return true
+    }
+    return false
 }
