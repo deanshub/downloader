@@ -25,14 +25,15 @@ export async function searchTorrents(
     category: string = 'All',
     limit: number = 20
 ): Promise<SearchResults[]> {
-    const solidTorrents = await searchSolid(term)
-    const torrents: SearchResults[] = solidTorrents.map((t) => ({
-        title: t.title,
-        desc: `https://solidtorrents.net/view/${encodeURIComponent(t.title)}/${t._id}`,
-        size: bytes(t.size),
-        magnet: t.magnet,
-        seeders: t.swarm.seeders
-    }))
+    // const solidTorrents = await searchSolid(term)
+    // const torrents: SearchResults[] = solidTorrents.map((t) => ({
+    //     title: t.title,
+    //     desc: `https://solidtorrents.net/view/${encodeURIComponent(t.title)}/${t._id}`,
+    //     size: bytes(t.size),
+    //     magnet: t.magnet,
+    //     seeders: t.swarm.seeders
+    // }))
+    const torrents: SearchResults[] = []
 
     // console.log('solid',torrents.length)
     // const priateBayResults = await searchPirateBay(term, category)
