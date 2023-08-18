@@ -127,6 +127,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         ctx.reply('Updating...')
         execa('yarn', ['update'], {
             cwd: process.cwd(),
+            stdio: 'inherit',
             detached: true,
         })
         // process.exit(0)
