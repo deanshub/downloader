@@ -225,6 +225,7 @@ async function checkForNewCommit() {
     // fetch and see if you need to pull
     const { stdout } = await execa('git', ['fetch'], {
         cwd: process.cwd(),
+        stdio: 'inherit',
     })
     if (stdout !== 'Already up to date.') {
         return true
