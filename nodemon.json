@@ -1,7 +1,7 @@
 {
     "ext": "ts,json",
     "ignore": ["src/**/*.spec.ts", "build"],
-    "exec": "ts-node -r dotenv/config --files ./src/index.ts || touch ./src/index.ts",
+    "exec": "npx ts-node -r dotenv/config --files ./src/index.ts || touch ./src/index.ts",
     "files": true,
     "delay": 2500
 }
