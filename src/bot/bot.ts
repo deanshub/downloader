@@ -117,28 +117,27 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', async (ctx) => downloads(ctx))
 
-    // let pullInProgrerss = false
-    bot.command('pull', async (ctx) => {
-        // check if there are newer commits
-        // if so than run a new process that resets, pulls, yarn, and starts + kill current process
-        // const newCommitExists = await checkForNewCommit()
+    // bot.command('pull', (ctx) => {
+    //     // check if there are newer commits
+    //     // if so than run a new process that resets, pulls, yarn, and starts + kill current process
+    //     // const newCommitExists = await checkForNewCommit()
 
-        // if (newCommitExists) {
-        // ctx.reply('Updating...')
-        // const currentUid = process.getuid?.() ?? 0
-        // execa('yarn', ['update'], {
-        //     cwd: process.cwd(),
-        //     stdio: 'inherit',
-        //     detached: true,
-        //     uid: currentUid,
-        // })
-        // process.exit(0)
-        // } else {
-            // ctx.reply('Already up to date')
-        // }
-        ctx.reply('Updating...')
-        process.exit(2)
-    })
+    //     // if (newCommitExists) {
+    //     // ctx.reply('Updating...')
+    //     // const currentUid = process.getuid?.() ?? 0
+    //     // execa('yarn', ['update'], {
+    //     //     cwd: process.cwd(),
+    //     //     stdio: 'inherit',
+    //     //     detached: true,
+    //     //     uid: currentUid,
+    //     // })
+    //     // process.exit(0)
+    //     // } else {
+    //         // ctx.reply('Already up to date')
+    //     // }
+    //     ctx.reply('Updating...')
+    //     process.exit(2)
+    // })
 
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
