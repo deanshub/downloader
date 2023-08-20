@@ -147,7 +147,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.command('kill', async (ctx) => {
-        process.exit(1)
+        process.exit(0)
     })
     // bot.command('reset', async (ctx) => {
     //     bot.stop()
