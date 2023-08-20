@@ -48,7 +48,7 @@ function messageForFile(file: DownloadedFile): string {
 export async function deleteFile(filePath: string): Promise<void>{
     const clearedFilePath = filePath.replace(/^📁 /, '').replace(/^📄 /, '')
     const downloadDir = process.env.DOWNLOAD_DIR ?? process.cwd()
-    await fs.unlink(path.join(downloadDir, clearedFilePath))
+    await fs.remove(path.join(downloadDir, clearedFilePath))
 }
 
 export async function filesCommand(ctx: any, pageNumber: number){
