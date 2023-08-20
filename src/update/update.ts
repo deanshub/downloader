@@ -20,9 +20,7 @@ export async function update(): Promise<void>{
             cwd: process.cwd(),
             stdio: 'pipe',
         })
-        console.log({stdout})
         const noNewCommit = /Your branch is up to date with \'origin\/master\'/.test(stdout)
-        console.log({noNewCommit})
         // if so than run a new process that resets, pulls, yarn, and starts + kill current process
         if (pullInProgrerss || noNewCommit) {
             return;
