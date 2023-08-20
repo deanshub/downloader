@@ -5,9 +5,9 @@ import {
     InlineKeyboardMarkup,
     Update,
 } from 'telegraf/typings/core/types/typegram'
-import { defaultExtra } from './keyboard'
 import { progressBar } from './progressBarText'
 import { stripHtml } from '../stripHtml'
+import { reply } from './messages'
 
 export async function downloads(
     ctx: Context<Update>,
@@ -26,7 +26,7 @@ export async function downloads(
             }).catch(console.warn)
         })
     if (currentDownloads.length === 0) {
-        ctx.reply('There are no current downloads', defaultExtra)
+        reply(ctx, 'There are no current downloads')
     }
 }
 

@@ -12,6 +12,7 @@ import { checkForUpdate } from '../updater'
 import { getStorageDetails } from '../getStorageDetails'
 import { getMemoryDetails } from '../getMemoryDetails'
 import { deleteFile, filesCommand } from '../downloadedFiles'
+import { reply } from './messages'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -128,26 +129,22 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', async (ctx) => downloads(ctx))
 
-    // bot.command('pull', (ctx) => {
-    //     ctx.reply('Pulling...')
-    //     process.exit(2)
-    // })
-
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
-        return ctx.reply('Refreshed')
+        return reply(ctx, 'Refreshed')
     })
+
     bot.command('check', async (ctx) => {
         const updateMessage = await checkForUpdate()
         if (updateMessage) {
-            ctx.reply(updateMessage, { parse_mode: 'HTML' })
+            reply(ctx, updateMessage, { parse_mode: 'HTML' })
         } else {
-            ctx.reply(`No updates available`)
+            reply(ctx, `No updates available`)
         }
     })
 
     bot.command('kill', async (ctx) => {
-        process.exit(0)
+        throw new Error('Killed')
     })
     // bot.command('reset', async (ctx) => {
     //     bot.stop()
@@ -175,7 +172,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.launch().then(() => {
         console.log('Bot killed')
         bot.telegram.sendMessage(getAdmin(), 'Bot killed')
-    },console.error)
+    }, console.error)
 
     console.log('Bot started')
     bot.telegram.sendMessage(getAdmin(), 'Bot started')
