@@ -136,7 +136,8 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         // } else {
             // ctx.reply('Already up to date')
         // }
-        ctx.reply('to be fixed...')
+        ctx.reply('Updating...')
+        process.exit(0)
     })
 
     bot.command('refresh', async (ctx) => {
@@ -174,7 +175,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         await filesCommand(ctx, 0)
     })
 
-    bot.launch()
+    bot.launch().then(() => {
+        console.log('Bot started')
+        bot.telegram.sendMessage(getAdmin(), 'Bot started')
+    })
 
     // Enable graceful stop
     // process.once('SIGINT', () => bot.stop('SIGINT'))
