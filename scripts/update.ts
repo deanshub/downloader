@@ -2,8 +2,20 @@ import execa from 'execa'
 
 let pullInProgrerss = false
 
+async function checkForNewCommit() {
+    // fetch and see if you need to pull
+    const { stdout } = await execa('git', ['fetch'], {
+        cwd: process.cwd(),
+        stdio: 'inherit',
+    })
+    if (stdout !== 'Already up to date.') {
+        return true
+    }
+    return false
+}
 export async function update(): Promise<void>{
         // check if there are newer commits
+        await checkForNewCommit()
         const { stdout } = await execa('git', ['status', '-uno'], {
             cwd: process.cwd(),
             stdio: 'pipe',
