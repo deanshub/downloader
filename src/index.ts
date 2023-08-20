@@ -1,4 +1,4 @@
-import { update } from '../scripts/update'
+import { update } from './update/update'
 import { setupBot } from './bot/bot'
 import { loadFromTorrentsDir } from './torrents'
 import { setupAutoUpdate } from './updater'
