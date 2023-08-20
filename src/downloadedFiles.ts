@@ -26,23 +26,25 @@ async function getFiles(
                 path: path.join(downloadDir, file.name),
                 stats,
                 isDirectory: file.isDirectory(),
-                size: file.isDirectory() ? 0 : stats.size,
+                size: stats.size,
             }
         })
         .sort((a, b) => {
             return a.stats.mtime.getTime() - b.stats.mtime.getTime()
         })
+    const totalPages = Math.ceil(files.length / FILES_COUNT)
+    const pageContent = sortedByDateFiles.slice(
+        page * FILES_COUNT,
+        page * FILES_COUNT + FILES_COUNT
+    )
     return {
-        totalPages: Math.ceil(files.length / FILES_COUNT),
-        page: sortedByDateFiles.slice(
-            page * FILES_COUNT,
-            page * FILES_COUNT + FILES_COUNT
-        ),
+        totalPages,
+        page: pageContent,
     }
 }
 
 function messageForFile(file: DownloadedFile): string {
-    return `${file.isDirectory ? '📁' : '📄'} ${file.name}`
+    return `${file.isDirectory ? '🗄️' : '📄'} ${file.name}`
 }
 
 export async function deleteFile(filePath: string): Promise<void>{
