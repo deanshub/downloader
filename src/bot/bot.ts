@@ -128,10 +128,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', async (ctx) => downloads(ctx))
 
-    bot.command('pull', (ctx) => {
-        ctx.reply('Pulling...')
-        process.exit(2)
-    })
+    // bot.command('pull', (ctx) => {
+    //     ctx.reply('Pulling...')
+    //     process.exit(2)
+    // })
 
     bot.command('refresh', async (ctx) => {
         await refreshDlna()

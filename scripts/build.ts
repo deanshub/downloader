@@ -12,7 +12,8 @@ async function build(): Promise<void> {
         outdir: tsconfig.compilerOptions.outDir,
         entryPoints: [`src/${pkg.module}`],
         target: [tsconfig.compilerOptions.target],
-        external: ['webtorrent', 'torrent-search-api'],
+        external: ['webtorrent', 'torrent-search-api', 'node-fetch'],
+        keepNames: true,
     })
 }
 build()
