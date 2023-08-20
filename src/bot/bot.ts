@@ -66,8 +66,9 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             return
         }
 
-        const callbackOriginalData = (ctx.callbackQuery as {data: string}).data
-        
+        const callbackOriginalData = (ctx.callbackQuery as { data: string })
+            .data
+
         const cbData = get(callbackOriginalData)
         if (cbData) {
             if (cbData.type === 'download') {
@@ -75,7 +76,9 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                     const torrent = await download(cbData.data)
                     torrent
                         .on('done', () => {
-                            ctx.reply(`${torrent.name} Downloaded`).catch(console.warn)
+                            ctx.reply(`${torrent.name} Downloaded`).catch(
+                                console.warn
+                            )
                         })
                         .on('error', (e) => {
                             ctx.reply(
@@ -101,11 +104,19 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 await handleRefreshCall(cbData.data, ctx)
             }
         } else if (callbackOriginalData === 'delete') {
-            deleteFile((ctx.callbackQuery.message as {text: string}).text).then(() => {
-                ctx.answerCbQuery('Deleted')
-            }, (e) => {
-                ctx.reply(`Couldn't delete file\n${e.toString()}`, defaultExtra)
-            })
+            deleteFile(
+                (ctx.callbackQuery.message as { text: string }).text
+            ).then(
+                () => {
+                    ctx.answerCbQuery('Deleted')
+                },
+                (e) => {
+                    ctx.reply(
+                        `Couldn't delete file\n${e.toString()}`,
+                        defaultExtra
+                    )
+                }
+            )
         } else if (/^filesPage\d+/.test(callbackOriginalData)) {
             const page = parseInt(callbackOriginalData.replace('filesPage', ''))
             filesCommand(ctx, page)
@@ -118,6 +129,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('downloads', async (ctx) => downloads(ctx))
 
     bot.command('pull', (ctx) => {
+        ctx.reply('Pulling...')
         process.exit(2)
     })
 
@@ -137,19 +149,23 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('kill', async (ctx) => {
         process.exit(1)
     })
-    bot.command('reset', async (ctx) => {
-        bot.stop()
-        setupBot()
-    })
+    // bot.command('reset', async (ctx) => {
+    //     bot.stop()
+    //     setupBot()
+    // })
 
     bot.command('storage', async (ctx) => {
         const storageDetails = await getStorageDetails()
-        ctx.replyWithHTML(`<b>${storageDetails.freeSpace} (${storageDetails.freePercentage}%)</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`)
+        ctx.replyWithHTML(
+            `<b>${storageDetails.freeSpace} (${storageDetails.freePercentage}%)</b> Free\n${storageDetails.takenSpace} of ${storageDetails.totalSpace} taken`
+        )
     })
 
     bot.command('memory', async (ctx) => {
         const memoryDetails = await getMemoryDetails()
-        ctx.replyWithHTML(`<b>${memoryDetails.processMemoryString}</b> Used\nHeap ${memoryDetails.heapUsedString} used (${memoryDetails.heapPercentageString})`)
+        ctx.replyWithHTML(
+            `<b>${memoryDetails.processMemoryString}</b> Used\nHeap ${memoryDetails.heapUsedString} used (${memoryDetails.heapPercentageString})`
+        )
     })
 
     bot.command('files', async (ctx) => {
@@ -157,13 +173,16 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     bot.launch().then(() => {
-        console.log('Bot started')
-        bot.telegram.sendMessage(getAdmin(), 'Bot started')
-    })
+        console.log('Bot killed')
+        bot.telegram.sendMessage(getAdmin(), 'Bot killed')
+    },console.error)
+
+    console.log('Bot started')
+    bot.telegram.sendMessage(getAdmin(), 'Bot started')
 
     // Enable graceful stop
-    process.once('SIGINT', () => bot.stop('SIGINT'))
-    process.once('SIGTERM', () => bot.stop('SIGTERM'))
+    // process.once('SIGINT', () => bot.stop('SIGINT'))
+    // process.once('SIGTERM', () => bot.stop('SIGTERM'))
     return bot
 }
 
@@ -176,27 +195,32 @@ async function search(ctx: Context<Update>, command: string) {
     const searchTerm = getCommandText(command, ctx.message.text)
     const category = command === 'movies' ? 'Movies' : undefined
     const torrents = await searchTorrents(searchTerm, category)
-    torrents.sort((a,b)=>a.seeders-b.seeders).forEach(async (torrent) => {
-        const key = set({ data: torrent.magnet, type: 'download' })
-        ctx.replyWithHTML(`<b>${torrent.size}</b>\n${stripHtml(torrent.title)}`, {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: '📥 Download',
-                            callback_data: key,
-                        },
-                        {
-                            text: '🔗 Description',
-                            url: torrent.desc,
-                        },
-                    ],
-                ],
-                remove_keyboard: true,
-                resize_keyboard: true,
-            },
-        }).catch(console.warn)
-    })
+    torrents
+        .sort((a, b) => a.seeders - b.seeders)
+        .forEach(async (torrent) => {
+            const key = set({ data: torrent.magnet, type: 'download' })
+            ctx.replyWithHTML(
+                `<b>${torrent.size}</b>\n${stripHtml(torrent.title)}`,
+                {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: '📥 Download',
+                                    callback_data: key,
+                                },
+                                {
+                                    text: '🔗 Description',
+                                    url: torrent.desc,
+                                },
+                            ],
+                        ],
+                        remove_keyboard: true,
+                        resize_keyboard: true,
+                    },
+                }
+            ).catch(console.warn)
+        })
     if (torrents.length === 0) {
         ctx.reply('No torrents found', defaultExtra)
     }
