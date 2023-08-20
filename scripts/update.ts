@@ -9,7 +9,7 @@ export async function update(){
             stdio: 'pipe',
         })
         console.log({stdout})
-        const noNewCommit = /Your branch is up to date with \'origin\/master\'./.test(stdout)
+        const noNewCommit = /Your branch is up to date with \'origin\/master\'/.test(stdout)
         // if so than run a new process that resets, pulls, yarn, and starts + kill current process
         if (pullInProgrerss || noNewCommit) {
             return

@@ -137,7 +137,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             // ctx.reply('Already up to date')
         // }
         ctx.reply('Updating...')
-        process.exit(0)
+        process.exit(2)
     })
 
     bot.command('refresh', async (ctx) => {
