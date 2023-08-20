@@ -4,7 +4,6 @@ import { loadFromTorrentsDir } from './torrents'
 import { setupAutoUpdate } from './updater'
 
 async function init(): Promise<void> {
-    // update and start bot
     await update()
     const bot = await setupBot()
     await loadFromTorrentsDir(bot)

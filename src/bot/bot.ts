@@ -117,27 +117,9 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('movies', async (ctx) => search(ctx, 'movies'))
     bot.command('downloads', async (ctx) => downloads(ctx))
 
-    // bot.command('pull', (ctx) => {
-    //     // check if there are newer commits
-    //     // if so than run a new process that resets, pulls, yarn, and starts + kill current process
-    //     // const newCommitExists = await checkForNewCommit()
-
-    //     // if (newCommitExists) {
-    //     // ctx.reply('Updating...')
-    //     // const currentUid = process.getuid?.() ?? 0
-    //     // execa('yarn', ['update'], {
-    //     //     cwd: process.cwd(),
-    //     //     stdio: 'inherit',
-    //     //     detached: true,
-    //     //     uid: currentUid,
-    //     // })
-    //     // process.exit(0)
-    //     // } else {
-    //         // ctx.reply('Already up to date')
-    //     // }
-    //     ctx.reply('Updating...')
-    //     process.exit(2)
-    // })
+    bot.command('pull', (ctx) => {
+        process.exit(2)
+    })
 
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
@@ -180,8 +162,8 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     // Enable graceful stop
-    // process.once('SIGINT', () => bot.stop('SIGINT'))
-    // process.once('SIGTERM', () => bot.stop('SIGTERM'))
+    process.once('SIGINT', () => bot.stop('SIGINT'))
+    process.once('SIGTERM', () => bot.stop('SIGTERM'))
     return bot
 }
 

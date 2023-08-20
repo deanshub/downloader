@@ -1,4 +1,5 @@
 {
+    "verbose": true,
     "ext": "ts,json",
     "ignore": ["src/**/*.spec.ts", "build"],
     "exec": "npx ts-node -r dotenv/config --files ./src/index.ts || touch ./src/index.ts",
