@@ -13,6 +13,7 @@
         "god": "sudo env \"PATH=$PATH\" nodemon",
         "dev": "nodemon",
         "tsnode": "ts-node src/index.ts",
+        "mount": "fdisk -l && mkdir /media/external && mount /dev/sdc1 /media/external",
         "test": "jest"
     },
     "repository": {
