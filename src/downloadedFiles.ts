@@ -21,12 +21,14 @@ async function getFiles(
     const sortedByDateFiles = files
         .map((file) => {
             const stats = fs.statSync(path.join(downloadDir, file.name))
+            const size = sizeSync(path.join(downloadDir, file.name))
+
             return {
                 name: file.name,
                 path: path.join(downloadDir, file.name),
                 stats,
                 isDirectory: file.isDirectory(),
-                size: stats.size,
+                size,
             }
         })
         .sort((a, b) => {
@@ -94,3 +96,12 @@ export async function filesCommand(ctx: any, pageNumber: number){
         }
     }).catch(console.warn)
 }
+
+function sizeSync(p) {
+    const stat = fs.statSync(p);
+    if(stat.isFile())
+      return stat.size;
+    else if(stat.isDirectory())
+      return fs.readdirSync(p).reduce((a, e) => a + sizeSync(path.join(p, e)), 0);
+    else return 0; // can't take size of a stream/symlink/socket/etc
+  }
