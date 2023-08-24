@@ -97,7 +97,7 @@ export async function filesCommand(ctx: any, pageNumber: number){
     }).catch(console.warn)
 }
 
-function sizeSync(p) {
+function sizeSync(p: string): number {
     const stat = fs.statSync(p);
     if(stat.isFile())
       return stat.size;

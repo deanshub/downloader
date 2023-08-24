@@ -55,6 +55,34 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             })
     })
 
+    bot.hears(/^magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32}/i, async (ctx) => {
+        if (!isAdmin(ctx)) {
+            ctx.reply(`You're not an admin so you can't download`)
+            ctx.telegram.sendMessage(
+                getAdmin(),
+                `${ctx.from?.first_name} ${ctx.from?.last_name} (${ctx.from?.username} - ${ctx.from?.id}) tried to download`
+            )
+            return
+        }
+        const magnetURI = ctx.message.text
+        const torrent = await download(magnetURI)
+        torrent
+            .on('done', async () => {
+                ctx.reply(`${torrent.name} Downloaded`)
+                await refreshDlna()
+            })
+            .on('error', (e) => {
+                ctx.replyWithHTML(
+                    `<b>${stripHtml(
+                        torrent.name
+                    )}</b> failed to download</b>\n${stripHtml(e.toString())}`
+                )
+            })
+            .on('ready', () => {
+                downloads(ctx, torrent.infoHash)
+            })
+    })
+
     bot.command('search', (ctx) => search(ctx, 'search'))
 
     bot.on('callback_query', async (ctx) => {
