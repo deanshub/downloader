@@ -1,5 +1,4 @@
 import { Telegraf, Context } from 'telegraf'
-import { Update } from 'typegram'
 import execa from 'execa'
 import { set, get } from '../cbData'
 import { download, cancelDownload } from '../torrents'
