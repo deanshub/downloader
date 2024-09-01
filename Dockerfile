@@ -1,15 +1,13 @@
-FROM node:16
+FROM node:22
 
 WORKDIR /app
 
 ADD package.json /app/
-ADD .yarn /app/.yarn
-ADD .yarnrc.yml /app/
-ADD yarn.lock /app/
+ADD pnpm-lock.yaml /app/
 
-RUN yarn --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 COPY . /app
 
-RUN yarn build
+RUN pnpm build
 
-CMD ["yarn", "start"]
+CMD ["pnpm", "start"]

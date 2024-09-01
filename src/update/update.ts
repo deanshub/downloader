@@ -21,14 +21,14 @@ export async function update(): Promise<void>{
             stdio: 'pipe',
         })
         const noNewCommit = /Your branch is up to date with \'origin\/master\'/.test(stdout)
-        // if so than run a new process that resets, pulls, yarn, and starts + kill current process
+        // if so than run a new process that resets, pulls, pnpm, and starts + kill current process
         if (pullInProgrerss || noNewCommit) {
             return;
         }
         pullInProgrerss = true
-        // kill process of yarn update which is not this process
-        // const { stdout: pid } = await execa('pidof', ['yarn'], {
-        // const { stdout: pid } = await execa('pidof yarn', {
+        // kill process of pnpm update which is not this process
+        // const { stdout: pid } = await execa('pidof', ['pnpm'], {
+        // const { stdout: pid } = await execa('pidof pnpm', {
         //     shell: true,
         //     cwd: process.cwd(),
         //     stdio: 'pipe',
@@ -52,14 +52,14 @@ export async function update(): Promise<void>{
         })
 
         if (pullStdOut !== 'Already up to date.') {
-            await execa('yarn', {
+            await execa('pnpm', ['install'], {
                 cwd: process.cwd(),
                 stdio: 'inherit',
             })
         }
         pullInProgrerss = false
 
-        // await execa('yarn', ['dev'], {
+        // await execa('pnpm', ['dev'], {
         //     cwd: process.cwd(),
         //     stdio: 'inherit',
         //     detached: true,
