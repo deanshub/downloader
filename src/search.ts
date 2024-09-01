@@ -1,7 +1,7 @@
 import TorrentSearchApi from 'torrent-search-api'
 import PirateBay from 'thepiratebay'
-import { searchSolid } from './solidTorrents'
-import bytes from 'bytes'
+// import { searchSolid } from './solidTorrents'
+// import bytes from 'bytes'
 
 const providers = TorrentSearchApi.getProviders()
 const publicProviders = providers.filter((provider) => {
