@@ -4,12 +4,17 @@ RUN corepack enable
 
 WORKDIR /app
 
-ADD package.json /app/
-ADD pnpm-lock.yaml /app/
+# Copy only package.json and pnpm-lock.yaml first to leverage Docker cache
+COPY package.json pnpm-lock.yaml ./
 
+# Install dependencies
 RUN pnpm install --frozen-lockfile
-COPY . /app
 
+# Copy the rest of the application code
+COPY . .
+
+# Build the application
 RUN pnpm build
 
+# Set the default command
 CMD ["pnpm", "start"]
