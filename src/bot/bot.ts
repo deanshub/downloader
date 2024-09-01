@@ -215,7 +215,7 @@ function getCommandText(command: string, text: string): string {
     return text.replace(`/${command} `, '')
 }
 
-async function search(ctx: Context<Update>, command: string) {
+async function search(ctx: Context, command: string) {
     // @ts-ignore
     const searchTerm = getCommandText(command, ctx.message.text)
     const category = command === 'movies' ? 'Movies' : undefined

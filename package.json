@@ -12,7 +12,8 @@
         "start": "node -r dotenv/config build/index.js",
         "god": "sudo env \"PATH=$PATH\" nodemon",
         "dev": "nodemon",
-        "tsnode": "ts-node src/index.ts",
+        "tsnode": "ts-node -r dotenv/config src/index.ts",
+        "bun": "bun run src/index.ts",
         "mount": "ts-node scripts/mount.ts"
     },
     "repository": {
