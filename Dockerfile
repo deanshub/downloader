@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build the application
-RUN pnpm build
+# RUN pnpm build
 
 # Set the default command
-CMD ["pnpm", "start"]
+CMD ["pnpm", "tsnode"]
