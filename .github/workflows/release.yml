@@ -1,34 +1,37 @@
-name: "release"
+name: 'release'
 
 on:
-  push:
-    branches:
-      - "master"
+    push:
+        branches:
+            - 'master'
 
 jobs:
-  release:
-    name: "Release"
-    runs-on: "ubuntu-latest"
+    release:
+        name: 'Release'
+        runs-on: 'ubuntu-latest'
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
 
-      - name: "Install Dependencies"
-        run: yarn
+            - name: 'Install pnpm'
+              uses: pnpm/action-setup@v4
 
-      - name: "Build & test"
-        run: |
-          yarn test
-          yarn build
+            - name: 'Install Dependencies'
+              run: pnpm install --frozen-lockfile
 
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          title: "Release Build"
-          prerelease: false
-          files: |
-            LICENSE.txt
-            *.tar.gz
-            build/*
+            - name: 'Build & test'
+              run: |
+                  pnpm test
+                  pnpm build
+
+            - uses: 'marvinpinto/action-automatic-releases@latest'
+              with:
+                  repo_token: '${{ secrets.GITHUB_TOKEN }}'
+                  automatic_release_tag: 'latest'
+                  title: 'Release Build'
+                  prerelease: false
+                  files: |
+                      LICENSE.txt
+                      *.tar.gz
+                      build/*
