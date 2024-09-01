@@ -1,5 +1,7 @@
 FROM node:22
 
+RUN corepack enable
+
 WORKDIR /app
 
 ADD package.json /app/
