@@ -70,5 +70,6 @@
         "prettier": "^2.8.8",
         "regenerator-runtime": "^0.14.0",
         "ts-node": "^10.9.1"
-    }
+    },
+    "packageManager": "pnpm@8.15.4"
 }
