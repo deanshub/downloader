@@ -49,7 +49,7 @@
         "thepiratebay": "^1.4.8",
         "toad-scheduler": "^1.6.1",
         "torrent-search-api": "^2.1.4",
-        "typescript": "^4.9.5",
+        "typescript": "^5.5.4",
         "uuid": "^8.3.2",
         "webtorrent": "^1.9.7"
     },
