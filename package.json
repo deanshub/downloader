@@ -43,7 +43,7 @@
         "fs-extra": "^10.1.0",
         "humanize-duration": "^3.29.0",
         "lru-cache": "^7.18.3",
-        "parse-torrent": "^9.1.5",
+        "parse-torrent": "^11.0.17",
         "prettysize": "^2.0.0",
         "telegraf": "^4.12.2",
         "thepiratebay": "^1.4.8",
