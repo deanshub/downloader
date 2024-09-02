@@ -47,7 +47,7 @@
         "prettysize": "^2.0.0",
         "telegraf": "^4.12.2",
         "thepiratebay": "^1.4.8",
-        "toad-scheduler": "^1.6.1",
+        "toad-scheduler": "^3.0.1",
         "torrent-search-api": "^2.1.4",
         "typescript": "^4.9.5",
         "uuid": "^8.3.2",
