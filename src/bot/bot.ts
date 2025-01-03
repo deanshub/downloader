@@ -226,7 +226,7 @@ async function search(ctx: Context, command: string) {
     const searchTerm = getCommandText(command, ctx.message.text)
     const category = command === 'movies' ? 'Movies' : undefined
     const torrents = await searchTorrents(searchTerm, category)
-    console.log({ torrents })
+
     torrents
         .sort((a, b) => a.seeders - b.seeders)
         .forEach(async (torrent) => {

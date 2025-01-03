@@ -69,7 +69,6 @@ async function searchTorrentsUsingTorrentSearchApi(
     category: string,
     limit: number
 ): Promise<SearchResults[]> {
-    console.log({ provider, term, category, limit })
     const [torrents] = await Promise.all([
         TorrentSearchApi.search(
             Array.isArray(provider) ? provider : [provider],
