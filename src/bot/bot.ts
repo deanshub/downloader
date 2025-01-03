@@ -259,9 +259,9 @@ async function search(ctx: Context, command: string) {
 }
 
 async function refreshDlna(): Promise<void> {
-    await execa('sudo', ['service', 'minidlna', 'force-reload'])
+    void execa('sudo', ['service', 'minidlna', 'force-reload'])
 
-    await execa('sudo', ['service', 'minidlna', 'restart'], {
+    void execa('sudo', ['service', 'minidlna', 'restart'], {
         cwd: process.cwd(),
     })
 }
