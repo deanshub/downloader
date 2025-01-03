@@ -1,20 +1,18 @@
-FROM node:22
-
-RUN corepack enable
+FROM oven/bun:1
 
 WORKDIR /app
 
-# Copy only package.json and pnpm-lock.yaml first to leverage Docker cache
-COPY package.json pnpm-lock.yaml ./
+# Copy only package.json and bun.lockb first to leverage Docker cache
+COPY package.json bun.lockb ./
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the application
-# RUN pnpm build
+# RUN bun run build
 
 # Set the default command
-CMD ["pnpm", "tsnode"]
+CMD ["bun", "run", "start"]
