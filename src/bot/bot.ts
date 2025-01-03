@@ -85,11 +85,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             })
     })
 
-    bot.on(message('text'), (ctx) => {
-        search(ctx, 'search')
-    })
-
-    // bot.command('search', (ctx) => search(ctx, 'search'))
+    bot.command('search', (ctx) => search(ctx, 'search'))
 
     bot.on('callback_query', async (ctx) => {
         if (!isAdmin(ctx)) {
@@ -161,7 +157,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     })
 
     // bot.command('movies', async (ctx) => search(ctx, 'movies'))
-    // bot.command('downloads', async (ctx) => downloads(ctx))
+    bot.command('downloads', async (ctx) => downloads(ctx))
 
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
@@ -201,6 +197,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
     bot.command('files', async (ctx) => {
         await filesCommand(ctx, 0)
+    })
+
+    bot.on(message('text'), (ctx) => {
+        search(ctx, 'search')
     })
 
     bot.launch().then(() => {
