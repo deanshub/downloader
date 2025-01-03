@@ -12,6 +12,7 @@ import { getStorageDetails } from '../getStorageDetails'
 import { getMemoryDetails } from '../getMemoryDetails'
 import { deleteFile, filesCommand } from '../downloadedFiles'
 import { reply } from './messages'
+import { message } from 'telegraf/filters'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -20,39 +21,41 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     setupAdmins()
     const bot = new Telegraf(process.env.BOT_TOKEN)
 
-    bot.start((ctx) => ctx.reply('Welcome', defaultExtra))
+    bot.start((ctx) => {
+        ctx.reply('Welcome', defaultExtra)
+    })
 
     bot.help((ctx) =>
-        ctx.reply('type /search to search for torrents', defaultExtra)
+        ctx.reply('type something to search for torrents', defaultExtra)
     )
 
-    bot.command('download', async (ctx) => {
-        if (!isAdmin(ctx)) {
-            ctx.reply(`You're not an admin so you can't download`)
-            ctx.telegram.sendMessage(
-                getAdmin(),
-                `${ctx.from.first_name} ${ctx.from.last_name} (${ctx.from.username} - ${ctx.from.id}) tried to download`
-            )
-            return
-        }
-        const magnetURI = getCommandText('download', ctx.message.text)
-        const torrent = await download(magnetURI)
-        torrent
-            .on('done', async () => {
-                ctx.reply(`${torrent.name} Downloaded`)
-                await refreshDlna()
-            })
-            .on('error', (e) => {
-                ctx.replyWithHTML(
-                    `<b>${stripHtml(
-                        torrent.name
-                    )}</b> failed to download</b>\n${stripHtml(e.toString())}`
-                )
-            })
-            .on('ready', () => {
-                downloads(ctx, torrent.infoHash)
-            })
-    })
+    // bot.command('download', async (ctx) => {
+    //     if (!isAdmin(ctx)) {
+    //         ctx.reply(`You're not an admin so you can't download`)
+    //         ctx.telegram.sendMessage(
+    //             getAdmin(),
+    //             `${ctx.from.first_name} ${ctx.from.last_name} (${ctx.from.username} - ${ctx.from.id}) tried to download`
+    //         )
+    //         return
+    //     }
+    //     const magnetURI = getCommandText('download', ctx.message.text)
+    //     const torrent = await download(magnetURI)
+    //     torrent
+    //         .on('done', async () => {
+    //             ctx.reply(`${torrent.name} Downloaded`)
+    //             await refreshDlna()
+    //         })
+    //         .on('error', (e) => {
+    //             ctx.replyWithHTML(
+    //                 `<b>${stripHtml(
+    //                     torrent.name
+    //                 )}</b> failed to download</b>\n${stripHtml(e.toString())}`
+    //             )
+    //         })
+    //         .on('ready', () => {
+    //             downloads(ctx, torrent.infoHash)
+    //         })
+    // })
 
     bot.hears(/^magnet:\?xt=urn:[a-z0-9]+:[a-z0-9]{32}/i, async (ctx) => {
         if (!isAdmin(ctx)) {
@@ -82,7 +85,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             })
     })
 
-    bot.command('search', (ctx) => search(ctx, 'search'))
+    bot.on(message('text'), (ctx) => {
+        search(ctx, 'search')
+    })
+
+    // bot.command('search', (ctx) => search(ctx, 'search'))
 
     bot.on('callback_query', async (ctx) => {
         if (!isAdmin(ctx)) {
@@ -153,8 +160,8 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
     })
 
-    bot.command('movies', async (ctx) => search(ctx, 'movies'))
-    bot.command('downloads', async (ctx) => downloads(ctx))
+    // bot.command('movies', async (ctx) => search(ctx, 'movies'))
+    // bot.command('downloads', async (ctx) => downloads(ctx))
 
     bot.command('refresh', async (ctx) => {
         await refreshDlna()
@@ -173,10 +180,10 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.command('kill', async (ctx) => {
         throw new Error('Killed')
     })
-    // bot.command('reset', async (ctx) => {
-    //     bot.stop()
-    //     setupBot()
-    // })
+    bot.command('reset', async (ctx) => {
+        bot.stop()
+        setupBot()
+    })
 
     bot.command('storage', async (ctx) => {
         const storageDetails = await getStorageDetails()
@@ -219,6 +226,7 @@ async function search(ctx: Context, command: string) {
     const searchTerm = getCommandText(command, ctx.message.text)
     const category = command === 'movies' ? 'Movies' : undefined
     const torrents = await searchTorrents(searchTerm, category)
+
     torrents
         .sort((a, b) => a.seeders - b.seeders)
         .forEach(async (torrent) => {

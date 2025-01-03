@@ -5,7 +5,7 @@ import path from 'path'
 import type { Context, Telegraf } from 'telegraf'
 import { getAdmin } from './bot/isAdmin'
 
-const client = new WebTorrent()
+const client = new WebTorrent({ utp: false })
 
 const downloads = new Set<WebTorrent.Torrent>()
 
@@ -72,7 +72,9 @@ export function cancelDownload(magnet: string): boolean {
     return false
 }
 
-export async function loadFromTorrentsDir(bot: Telegraf<Context>): Promise<void> {
+export async function loadFromTorrentsDir(
+    bot: Telegraf<Context>
+): Promise<void> {
     await fs.ensureDir(torrentsDir)
     const files = await fs.readdir(torrentsDir)
     await Promise.all(
@@ -86,11 +88,17 @@ export async function loadFromTorrentsDir(bot: Telegraf<Context>): Promise<void>
                 downloads.add(torrent)
                 torrent
                     .on('done', () => {
-                        bot.telegram.sendMessage(getAdmin(), `${torrent.name} Downloaded`)
+                        bot.telegram.sendMessage(
+                            getAdmin(),
+                            `${torrent.name} Downloaded`
+                        )
                         removeTorrent(torrent)
                     })
                     .on('error', () => {
-                        bot.telegram.sendMessage(getAdmin(), `${torrent.name} encountered an error and removed`)
+                        bot.telegram.sendMessage(
+                            getAdmin(),
+                            `${torrent.name} encountered an error and removed`
+                        )
                         removeTorrent(torrent, torrentFilePath)
                     })
 
