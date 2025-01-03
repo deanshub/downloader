@@ -1,5 +1,6 @@
 import TorrentSearchApi from 'torrent-search-api'
-import PirateBay from 'thepiratebay'
+// import PirateBay from 'thepiratebay'
+// import yts from 'yts'
 // import { searchSolid } from './solidTorrents'
 // import bytes from 'bytes'
 
@@ -8,7 +9,7 @@ const publicProviders = providers.filter((provider) => {
     // @ts-ignore
     return provider.public
 })
-publicProviders.forEach(provider=>{
+publicProviders.forEach((provider) => {
     TorrentSearchApi.enableProvider(provider.name)
 })
 
@@ -53,66 +54,84 @@ export async function searchTorrents(
     // }
 
     const curTorrents = await searchTorrentsUsingTorrentSearchApi(
-        publicProviders.map(p=>p.name),
+        publicProviders.map((p) => p.name),
         term,
         category,
-        limit*2
+        limit * 2
     )
     torrents.push(...curTorrents.slice(0, limit))
     return torrents
 }
 
 async function searchTorrentsUsingTorrentSearchApi(
-    provider: string|string[],
+    provider: string | string[],
     term: string,
     category: string,
     limit: number
 ): Promise<SearchResults[]> {
-    const torrents = await TorrentSearchApi.search(
-        Array.isArray(provider)?provider:[provider],
-        term,
-        category,
-        limit
-    ).catch((e) => {
-        console.warn(e)
-        return []
-    })
+    console.log({ provider, term, category, limit })
+    const [torrents] = await Promise.all([
+        TorrentSearchApi.search(
+            Array.isArray(provider) ? provider : [provider],
+            term,
+            category,
+            limit
+        ).catch((e) => {
+            console.warn(e)
+            return []
+        }),
+        // yts.listMovies({ limit, query_term: term }),
+    ])
 
     const fullResults = await Promise.allSettled(
-        torrents.map(async (torrent: TorrentSearchApi.Torrent, index, torrents) => {
-            const magnet = await TorrentSearchApi.getMagnet(torrent)
-            
-            return {
-                title: torrent.title,
-                desc: torrent.desc,
-                size: torrent.size,
-                magnet,
-                seeders: torrents.length-index
+        torrents.map(
+            async (torrent: TorrentSearchApi.Torrent, index, torrents) => {
+                const magnet = await TorrentSearchApi.getMagnet(torrent)
+
+                return {
+                    title: torrent.title,
+                    desc: torrent.desc,
+                    size: torrent.size,
+                    magnet,
+                    seeders: torrents.length - index,
+                }
             }
-        })
+        )
+        // .concat(
+        //     ytsResults.map(async (r) => ({
+        //         title: r.movie.title,
+        //         desc: r.movie.description_intro,
+        //         size: r.movie.torrents[0].size,
+        //         magnet: r.movie.torrents[0].magnet_url,
+        //         seeders: r.movie.torrents[0].seeds,
+        //     }))
+        // )
     )
 
-    // @ts-expect-error
-    return fullResults.filter(r=>r.status==='fulfilled').map(r=>r.value)
+    return fullResults
+        .filter((r) => r.status === 'fulfilled')
+        .map((r) => r.value)
 }
 
-async function searchPirateBay(term: string, category: string): Promise<SearchResults[]> {
-    const priateBayResults = await PirateBay.search(term, {
-        category,
-    }).catch(e=>{
-        console.warn(e)
-        console.error('Can\'t search pirate bay')
-        return []
-    })
+// async function searchPirateBay(
+//     term: string,
+//     category: string
+// ): Promise<SearchResults[]> {
+//     const priateBayResults = await PirateBay.search(term, {
+//         category,
+//     }).catch((e) => {
+//         console.warn(e)
+//         console.error("Can't search pirate bay")
+//         return []
+//     })
 
-    const results: SearchResults[] = priateBayResults.map(r=>({
-        title: r.name,
-        desc: r.link,
-        size: r.size,
-        magnet: r.magnetLink,
-        seeders: Number(r.seeders)
-    }))
+//     const results: SearchResults[] = priateBayResults.map((r) => ({
+//         title: r.name,
+//         desc: r.link,
+//         size: r.size,
+//         magnet: r.magnetLink,
+//         seeders: Number(r.seeders),
+//     }))
 
-    return results
-}
-
+//     return results
+// }

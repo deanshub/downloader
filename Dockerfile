@@ -7,6 +7,7 @@ COPY package.json bun.lockb ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile
+RUN bun pm trust --all
 
 # Copy the rest of the application code
 COPY . .
