@@ -13,13 +13,23 @@ import { getMemoryDetails } from '../getMemoryDetails'
 import { deleteFile, filesCommand } from '../downloadedFiles'
 import { reply } from './messages'
 import { message } from 'telegraf/filters'
+import { downloadFile } from '../download'
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
         throw new Error('No BOT_TOKEN provided')
     }
     setupAdmins()
-    const bot = new Telegraf(process.env.BOT_TOKEN)
+
+    let config
+    if (process.env.LOCAL_API_ROOT) {
+        config = {
+            telegram: {
+                apiRoot: process.env.LOCAL_API_ROOT,
+            },
+        }
+    }
+    const bot = new Telegraf(process.env.BOT_TOKEN, config)
 
     bot.start((ctx) => {
         ctx.reply('Welcome', defaultExtra)
@@ -199,6 +209,19 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         await filesCommand(ctx, 0)
     })
 
+    bot.on(message('video'), async (ctx) => {
+        try {
+            const video = ctx.message.video
+            const filename = getVideoFilename(ctx.message.caption)
+            const file = await ctx.telegram.getFileLink(video.file_id)
+            await downloadFile(file.href, filename)
+            await ctx.reply('Video received successfully!')
+        } catch (error) {
+            console.error('Error processing video:', error)
+            await ctx.reply('Sorry, there was an error processing your video.')
+        }
+    })
+
     bot.on(message('text'), (ctx) => {
         search(ctx, 'search')
     })
@@ -215,6 +238,14 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     // process.once('SIGINT', () => bot.stop('SIGINT'))
     // process.once('SIGTERM', () => bot.stop('SIGTERM'))
     return bot
+}
+
+function getVideoFilename(caption?: string): string {
+    const filename = caption ?? `${Date.now()}`
+    const cleanedFilename = filename
+        .replace(/[^a-zA-Z0-9\u0590-\u05FF\s\.\-]/g, '')
+        .replace(/\s/g, '_')
+    return `${cleanedFilename}.mp4`
 }
 
 function getCommandText(command: string, text: string): string {

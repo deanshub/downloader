@@ -10,6 +10,7 @@ DOWNLOAD_DIR=<Download directory - default is where the bot runs from>
 TORRENTS_DIR=<Torrent files directory - default is DOWNLOAD_DIR/torrents>
 ADMINS_CHATID=<Telegram chat Ids of admins seperated with comma>
 UPDATE_INTERVAL=<time interval to check for a new release (0 to disable) - default is 1d>
+LOCAL_API_ROOT=<Local API root - if you have a telegram-bot-api running on your machine, you can use http://127.0.0.1:8081>
 ```
 
 ## Prebuilt Docker images
@@ -22,9 +23,9 @@ docker pull ghcr.io/deanshub/downloader
 
 The image is built for multiple arches, which will be downloaded automatically based on the current machine arch:
 
-* linux/amd64
-* arm64
-* armv7 (for Raspberry Pi 3)
+-   linux/amd64
+-   arm64
+-   armv7 (for Raspberry Pi 3)
 
 ## Docker compose example
 
