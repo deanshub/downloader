@@ -9,3 +9,4 @@ storage - show available storage
 memory - show memory status
 reset - reset the bot
 files - show downloaded files
+speed - show current download speed

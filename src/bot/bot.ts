@@ -14,6 +14,7 @@ import { deleteFile, filesCommand } from '../downloadedFiles'
 import { reply } from './messages'
 import { message } from 'telegraf/filters'
 import { downloadFile } from '../download'
+import SpeedTest from '@cloudflare/speedtest';
 
 export async function setupBot(): Promise<Telegraf<Context>> {
     if (!process.env.BOT_TOKEN) {
@@ -197,6 +198,21 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             reply(ctx, `No updates available`)
         }
     })
+
+
+    bot.command('speed', async (ctx) => {
+        const speedtest = new SpeedTest()
+        speedtest.onFinish = results => {
+            console.log(results.getSummary());
+            const summary = results.getSummary()
+            ctx.replyWithHTML(`Download: ${summary.download} Mbps\nUpload: ${summary.upload} Mbps\nLatency: ${summary.latency} ms\nJitter: ${summary.jitter} ms`)
+        }
+        speedtest.onError = e => {
+            console.error(e)
+            ctx.reply(`Error running speed test: ${e}`)
+        }
+    })
+
 
     bot.command('kill', async (ctx) => {
         throw new Error('Killed')
