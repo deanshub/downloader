@@ -110,18 +110,24 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         const callbackOriginalData = (ctx.callbackQuery as { data: string })
             .data
 
+        console.log('getting cbData', callbackOriginalData)
         const cbData = get(callbackOriginalData)
         if (cbData) {
+            console.log('cbData.type', cbData.type)
             if (cbData.type === 'download') {
                 try {
+                    console.log('cbData.data', cbData.data)
                     const torrent = await download(cbData.data)
+                    console.log('got the torrent', torrent)
                     torrent
                         .on('done', () => {
+                            console.log('done downloading')
                             ctx.replyWithHTML(stripHtml(`${torrent.name} Downloaded`)).catch(
                                 console.warn
                             )
                         })
                         .on('error', (e) => {
+                            console.error('error downloading', e)
                             ctx.replyWithHTML(
                                 stripHtml(`${
                                     torrent.name
@@ -129,8 +135,18 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                             ).catch(console.warn)
                         })
                         .on('ready', () => {
+                            console.log('torrent ready')
                             downloads(ctx, torrent.infoHash)
                         })
+                        .on('warning', (e) => {
+                            console.error('warning downloading', e)
+                            ctx.replyWithHTML(
+                                stripHtml(`${
+                                    torrent.name
+                                } Warning\n${e.toString()}`)
+                            ).catch(console.warn)
+                        })
+
                 } catch (error) {
                     console.error(error)
                     ctx.reply(`Can't, please try later`, defaultExtra)
