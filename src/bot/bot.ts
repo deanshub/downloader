@@ -288,10 +288,10 @@ async function search(ctx: Context, command: string) {
                                     text: '📥 Download',
                                     callback_data: key,
                                 },
-                                {
-                                    text: '🔗 Description',
-                                    url: stripHtml(torrent.desc),
-                                },
+                                // {
+                                //     text: '🔗 Description',
+                                //     url: torrent.desc,
+                                // },
                             ],
                         ],
                         remove_keyboard: true,
