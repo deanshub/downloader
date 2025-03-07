@@ -34,6 +34,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
     bot.start((ctx) => {
         ctx.reply('Welcome', defaultExtra)
+        if (!isAdmin(ctx)) {
+            ctx.telegram.sendMessage(
+                getAdmin(),
+                `${ctx.from?.first_name} ${ctx.from?.last_name} (${ctx.from?.username} - ${ctx.from?.id}) started the bot`
+            )
+        }
     })
 
     bot.help((ctx) =>
