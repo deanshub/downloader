@@ -144,14 +144,14 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                             console.log('torrent ready')
                             downloads(ctx, torrent.infoHash)
                         })
-                        .on('warning', (e) => {
-                            console.error('warning downloading', e)
-                            ctx.replyWithHTML(
-                                stripHtml(`${
-                                    torrent.name
-                                } Warning\n${e.toString()}`)
-                            ).catch(console.warn)
-                        })
+                        // .on('warning', (e) => {
+                        //     console.error('warning downloading', e)
+                        //     ctx.replyWithHTML(
+                        //         stripHtml(`${
+                        //             torrent.name
+                        //         } Warning\n${e.toString()}`)
+                        //     ).catch(console.warn)
+                        // })
 
                 } catch (error) {
                     console.error(error)
