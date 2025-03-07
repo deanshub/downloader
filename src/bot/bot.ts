@@ -118,7 +118,6 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 try {
                     console.log('cbData.data', cbData.data)
                     const torrent = await download(cbData.data)
-                    console.log('got the torrent', torrent)
                     torrent
                         .on('done', () => {
                             console.log('done downloading')
