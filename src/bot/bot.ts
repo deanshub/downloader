@@ -290,7 +290,7 @@ async function search(ctx: Context, command: string) {
                                 },
                                 {
                                     text: '🔗 Description',
-                                    url: torrent.desc,
+                                    url: stripHtml(torrent.desc),
                                 },
                             ],
                         ],
@@ -298,7 +298,15 @@ async function search(ctx: Context, command: string) {
                         resize_keyboard: true,
                     },
                 }
-            ).catch(console.warn)
+            ).catch(e=>{
+                console.warn({
+                    title: torrent.title,
+                    size: torrent.size,
+                    desc: torrent.desc,
+                    key
+                })
+                console.warn(e)
+            })
         })
     if (torrents.length === 0) {
         ctx.reply('No torrents found', defaultExtra)
