@@ -117,15 +117,15 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                     const torrent = await download(cbData.data)
                     torrent
                         .on('done', () => {
-                            ctx.reply(`${torrent.name} Downloaded`).catch(
+                            ctx.replyWithHTML(stripHtml(`${torrent.name} Downloaded`)).catch(
                                 console.warn
                             )
                         })
                         .on('error', (e) => {
-                            ctx.reply(
-                                `${
+                            ctx.replyWithHTML(
+                                stripHtml(`${
                                     torrent.name
-                                } Failed to download\n${e.toString()}`
+                                } Failed to download\n${e.toString()}`)
                             ).catch(console.warn)
                         })
                         .on('ready', () => {
