@@ -263,10 +263,11 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         search(ctx, 'search')
     })
 
-    bot.launch().then(() => {
+    bot.launch().then(async () => {
         console.log('Bot killed')
-        bot.telegram.sendMessage(getAdmin(), 'Bot killed')
-    }, console.error)
+        await bot.telegram.sendMessage(getAdmin(), 'Bot killed')
+        process.exit(1)
+    })
 
     console.log('Bot started')
     bot.telegram.sendMessage(getAdmin(), 'Bot started')
