@@ -27,6 +27,7 @@
     "homepage": "https://github.com/deanshub/downloader#readme",
     "dependencies": {
         "@cloudflare/speedtest": "^1.4.1",
+        "arr-sdk": "^0.3.0",
         "axios": "^0.21.4",
         "bytes": "^3.1.2",
         "check-disk-space": "^3.4.0",

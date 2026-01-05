@@ -1,4 +1,5 @@
 import TorrentSearchApi from 'torrent-search-api'
+import { searchProwlarr, deduplicateResults } from './prowlarr'
 // import PirateBay from 'thepiratebay'
 // import yts from 'yts'
 // import { searchSolid } from './solidTorrents'
@@ -34,7 +35,6 @@ export async function searchTorrents(
     //     magnet: t.magnet,
     //     seeders: t.swarm.seeders
     // }))
-    const torrents: SearchResults[] = []
 
     // console.log('solid',torrents.length)
     // const priateBayResults = await searchPirateBay(term, category)
@@ -53,14 +53,25 @@ export async function searchTorrents(
     //     providerIndex++
     // }
 
-    const curTorrents = await searchTorrentsUsingTorrentSearchApi(
-        publicProviders.map((p) => p.name),
-        term,
-        category,
-        limit * 2
-    )
-    torrents.push(...curTorrents.slice(0, limit))
-    return torrents
+    // Search both sources in parallel
+    const [apiResults, prowlarrResults] = await Promise.all([
+        searchTorrentsUsingTorrentSearchApi(
+            publicProviders.map((p) => p.name),
+            term,
+            category,
+            limit * 2
+        ),
+        searchProwlarr(term, limit * 2),
+    ])
+
+    // Combine results from both sources
+    const combinedResults = [...apiResults, ...prowlarrResults]
+
+    // Deduplicate by info hash (prefers results with better metadata/seeders)
+    const deduplicated = deduplicateResults(combinedResults)
+
+    // Sort by seeders (descending) and apply final limit
+    return deduplicated.sort((a, b) => b.seeders - a.seeders).slice(0, limit)
 }
 
 async function searchTorrentsUsingTorrentSearchApi(

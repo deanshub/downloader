@@ -11,6 +11,8 @@ TORRENTS_DIR=<Torrent files directory - default is DOWNLOAD_DIR/torrents>
 ADMINS_CHATID=<Telegram chat Ids of admins seperated with comma>
 UPDATE_INTERVAL=<time interval to check for a new release (0 to disable) - default is 1d>
 LOCAL_API_ROOT=<Local API root - if you have a telegram-bot-api running on your machine, you can use http://127.0.0.1:8081>
+PROWLARR_BASE_URL=<Prowlarr base URL (optional) - e.g., http://localhost:9696>
+PROWLARR_API_KEY=<Prowlarr API key (optional) - found in Prowlarr Settings > General > Security>
 ```
 
 ## Prebuilt Docker images
@@ -43,4 +45,6 @@ services:
             DOWNLOAD_DIR: '/downloads'
             TORRENTS_DIR: '/torrents'
             ADMINS_CHATID: 'ID1,ID2'
+            PROWLARR_BASE_URL: 'http://prowlarr:9696' # Optional
+            PROWLARR_API_KEY: 'YOUR_API_KEY_HERE' # Optional
 ```
