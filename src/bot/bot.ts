@@ -252,7 +252,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             const filename = await getVideoFilename(ctx.message.caption)
             const file = await ctx.telegram.getFileLink(video.file_id)
             await downloadFile(file.href, filename)
-            await ctx.reply('Video received successfully!')
+            await ctx.reply(`Video saved as ${filename}`)
         } catch (error) {
             console.error('Error processing video:', error)
             await ctx.reply('Sorry, there was an error processing your video.')
