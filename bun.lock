@@ -6,6 +6,7 @@
       "name": "downloader",
       "dependencies": {
         "@cloudflare/speedtest": "^1.4.1",
+        "any-ascii": "^0.3.3",
         "arr-sdk": "^0.3.0",
         "axios": "^0.21.4",
         "bytes": "^3.1.2",
@@ -21,6 +22,7 @@
         "thepiratebay": "^1.4.8",
         "toad-scheduler": "^1.6.1",
         "torrent-search-api": "^2.1.4",
+        "translate": "^3.0.1",
         "typescript": "^4.9.5",
         "uuid": "^8.3.2",
         "webtorrent": "^2.5.11",
@@ -84,6 +86,8 @@
     "agent-base": ["agent-base@5.1.1", "", {}, "sha512-TMeqbNl2fMW0nMjTEPOwe3J/PRFP4vqeoNuQMG0HlMrtm5QxKqdvAkZ1pRBQ/ulIyDD5Yq0nJ7YbdD8ey0TO3g=="],
 
     "ajv": ["ajv@6.12.6", "", { "dependencies": { "fast-deep-equal": "^3.1.1", "fast-json-stable-stringify": "^2.0.0", "json-schema-traverse": "^0.4.1", "uri-js": "^4.2.2" } }, "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="],
+
+    "any-ascii": ["any-ascii@0.3.3", "", {}, "sha512-8hm+zPrc1VnlxD5eRgMo9F9k2wEMZhbZVLKwA/sPKIt6ywuz7bI9uV/yb27uvc8fv8q6Wl2piJT51q1saKX0Jw=="],
 
     "arr-sdk": ["arr-sdk@0.3.0", "", {}, "sha512-2woR7fUpKCtj1VFvwbgOUf5pJ1tndylMQK7IA9IYoAwMty0B/fY2am2ngDsAhHDQ55pDijzSkvRwdfkYhiFZBA=="],
 
@@ -828,6 +832,8 @@
     "tough-cookie": ["tough-cookie@2.5.0", "", { "dependencies": { "psl": "^1.1.28", "punycode": "^2.1.1" } }, "sha512-nlLsUzgm1kfLXSXfRZMc1KLAugd4hqJHDTvc2hDIwS3mZAfMEuMbc03SujMF+GEcpaX/qboeycw6iO8JwVv2+g=="],
 
     "tr46": ["tr46@0.0.3", "", {}, "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="],
+
+    "translate": ["translate@3.0.1", "", {}, "sha512-ZePIRh2uuN7ofL6V2KfRh71525pwPCC8CtoWJg29tQcr3vhGTFXzz2nYG+rmRxlZ5PCcMza/GDXqxLFx5omVpQ=="],
 
     "tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 

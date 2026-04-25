@@ -27,6 +27,7 @@
     "homepage": "https://github.com/deanshub/downloader#readme",
     "dependencies": {
         "@cloudflare/speedtest": "^1.4.1",
+        "any-ascii": "^0.3.3",
         "arr-sdk": "^0.3.0",
         "axios": "^0.21.4",
         "bytes": "^3.1.2",
@@ -42,6 +43,7 @@
         "thepiratebay": "^1.4.8",
         "toad-scheduler": "^1.6.1",
         "torrent-search-api": "^2.1.4",
+        "translate": "^3.0.1",
         "typescript": "^4.9.5",
         "uuid": "^8.3.2",
         "webtorrent": "^2.5.11",

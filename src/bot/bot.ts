@@ -249,7 +249,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.on(message('video'), async (ctx) => {
         try {
             const video = ctx.message.video
-            const filename = getVideoFilename(ctx.message.caption)
+            const filename = await getVideoFilename(ctx.message.caption)
             const file = await ctx.telegram.getFileLink(video.file_id)
             await downloadFile(file.href, filename)
             await ctx.reply('Video received successfully!')
@@ -278,11 +278,19 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     return bot
 }
 
-function getVideoFilename(caption?: string): string {
+async function getVideoFilename(caption?: string): Promise<string> {
     const filename = caption ?? `${Date.now()}`
-    const cleanedFilename = filename
-        .replace(/[^a-zA-Z0-9\u0590-\u05FF\s\.\-]/g, '')
-        .replace(/\s/g, '_')
+    let translated: string
+    try {
+        const translate = (await import('translate')).default
+        translated = await translate(filename, 'en')
+    } catch {
+        const anyAscii = (await import('any-ascii')).default
+        translated = anyAscii(filename)
+    }
+    const cleanedFilename = translated
+        .replace(/[^a-zA-Z0-9\s\.\-]/g, '')
+        .replace(/\s+/g, '_')
     return `${cleanedFilename}.mp4`
 }
 
