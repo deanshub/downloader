@@ -273,7 +273,8 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
     bot.on(message('document'), async (ctx) => {
         const doc = ctx.message.document
-        if (!doc.mime_type?.startsWith('video/')) return
+        const isVideo = doc.mime_type?.startsWith('video/') || /\.(mp4|mkv|avi|mov|wmv|flv|webm)$/i.test(doc.file_name ?? '')
+        if (!isVideo) return
         try {
             await ctx.reply(`Downloading "${doc.file_name ?? 'file'}"...`)
             const ext = doc.file_name?.match(/\.[a-zA-Z0-9]{2,4}$/)?.[0] ?? '.mp4'
