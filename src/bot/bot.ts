@@ -283,9 +283,14 @@ async function getVideoFilename(caption?: string): Promise<string> {
     const hasNonAscii = /[^\x00-\x7F]/.test(filename)
     let translated = filename
     if (hasNonAscii) {
+        // Normalize separators to spaces before translating
+        const normalized = filename
+            .replace(/[_\-\.]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
         try {
             const translate = (await import('translate')).default
-            const result = await translate(filename, 'en')
+            const result = await translate(normalized, 'en')
             if (result && /[a-zA-Z]/.test(result)) {
                 translated = result
             } else {
@@ -293,14 +298,14 @@ async function getVideoFilename(caption?: string): Promise<string> {
             }
         } catch {
             const anyAscii = (await import('any-ascii')).default
-            translated = anyAscii(filename)
+            translated = anyAscii(normalized)
         }
     }
     const cleanedFilename = translated
         .replace(/[^a-zA-Z0-9\s\.\-]/g, '')
         .trim()
         .replace(/\s+/g, '_')
-    if (!cleanedFilename || cleanedFilename === '.mp4') {
+    if (!cleanedFilename) {
         return `${Date.now()}.mp4`
     }
     return `${cleanedFilename}.mp4`
