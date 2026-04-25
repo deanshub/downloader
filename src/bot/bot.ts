@@ -280,27 +280,50 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
 async function getVideoFilename(caption?: string): Promise<string> {
     const filename = caption ?? `${Date.now()}`
-    const hasNonAscii = /[^\x00-\x7F]/.test(filename)
-    let translated = filename
+    // Normalize separators to spaces
+    const normalized = filename
+        .replace(/[_\-\.]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+    // Split into segments of non-ASCII and ASCII text
+    const segments = normalized.split(/(\s+)/)
+    const hasNonAscii = /[^\x00-\x7F]/.test(normalized)
+
+    let translated = normalized
     if (hasNonAscii) {
-        // Normalize separators to spaces before translating
-        const normalized = filename
-            .replace(/[_\-\.]+/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-        try {
-            const translate = (await import('translate')).default
-            const result = await translate(normalized, 'en')
-            if (result && /[a-zA-Z]/.test(result)) {
-                translated = result
-            } else {
-                throw new Error('Translation returned no useful text')
+        // Extract only the non-ASCII parts to translate
+        const nonAsciiText = segments
+            .filter(s => /[^\x00-\x7F]/.test(s))
+            .join(' ')
+
+        if (nonAsciiText) {
+            let translatedNonAscii = ''
+            try {
+                const translate = (await import('translate')).default
+                const result = await translate(nonAsciiText, 'en')
+                if (result && /[a-zA-Z]/.test(result)) {
+                    translatedNonAscii = result
+                }
+            } catch {}
+
+            if (!translatedNonAscii) {
+                const anyAscii = (await import('any-ascii')).default
+                translatedNonAscii = anyAscii(nonAsciiText)
             }
-        } catch {
-            const anyAscii = (await import('any-ascii')).default
-            translated = anyAscii(normalized)
+
+            // Replace non-ASCII segments with translated text
+            const translatedWords = translatedNonAscii.split(/\s+/)
+            let wordIndex = 0
+            translated = segments.map(s => {
+                if (/[^\x00-\x7F]/.test(s)) {
+                    return translatedWords[wordIndex++] ?? ''
+                }
+                return s
+            }).join('')
         }
     }
+
     const cleanedFilename = translated
         .replace(/[^a-zA-Z0-9\s\.\-]/g, '')
         .trim()
