@@ -250,6 +250,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     bot.on(message('video'), async (ctx) => {
         try {
             const video = ctx.message.video
+            await ctx.reply(`Downloading "${video.file_name ?? 'video'}"...`)
             const filename = await getVideoFilename(ctx.message.caption)
             let file: URL
             try {
@@ -274,6 +275,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         const doc = ctx.message.document
         if (!doc.mime_type?.startsWith('video/')) return
         try {
+            await ctx.reply(`Downloading "${doc.file_name ?? 'file'}"...`)
             const ext = doc.file_name?.match(/\.[a-zA-Z0-9]{2,4}$/)?.[0] ?? '.mp4'
             const filename = await getVideoFilename(ctx.message.caption ?? doc.file_name, ext)
             let file: URL
