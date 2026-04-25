@@ -270,6 +270,31 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         }
     })
 
+    bot.on(message('document'), async (ctx) => {
+        const doc = ctx.message.document
+        if (!doc.mime_type?.startsWith('video/')) return
+        try {
+            const ext = doc.file_name?.match(/\.[a-zA-Z0-9]{2,4}$/)?.[0] ?? '.mp4'
+            const filename = await getVideoFilename(ctx.message.caption ?? doc.file_name, ext)
+            let file: URL
+            try {
+                file = await ctx.telegram.getFileLink(doc.file_id)
+            } catch (e: any) {
+                if (e?.response?.error_code === 400) {
+                    await ctx.reply(`Can't download "${doc.file_name ?? filename}" - file is unavailable (possibly forwarded from another bot)`)
+                    return
+                }
+                throw e
+            }
+            await downloadFile(file.href, filename)
+            await ctx.reply(`Video saved as ${filename}`)
+        } catch (error) {
+            console.error('Error processing document:', error)
+            const name = doc.file_name ?? 'unknown'
+            await ctx.reply(`Error processing "${name}"`).catch(() => {})
+        }
+    })
+
     bot.on(message('text'), (ctx) => {
         search(ctx, 'search')
     })
@@ -293,11 +318,12 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     return bot
 }
 
-export async function getVideoFilename(caption?: string): Promise<string> {
+export async function getVideoFilename(caption?: string, ext = '.mp4'): Promise<string> {
     const filename = caption ?? `${Date.now()}`
     // Normalize separators to spaces and strip emoji
     const normalized = filename
         .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+        .replace(/\.[a-zA-Z0-9]{2,4}$/, '')
         .replace(/[_\-\.]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
@@ -318,9 +344,9 @@ export async function getVideoFilename(caption?: string): Promise<string> {
         .trim()
         .replace(/\s+/g, '_')
     if (!cleanedFilename) {
-        return `${Date.now()}.mp4`
+        return `${Date.now()}${ext}`
     }
-    return `${cleanedFilename}.mp4`
+    return `${cleanedFilename}${ext}`
 }
 
 function getCommandText(command: string, text: string): string {
