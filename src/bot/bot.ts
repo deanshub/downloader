@@ -278,50 +278,24 @@ export async function setupBot(): Promise<Telegraf<Context>> {
     return bot
 }
 
-async function getVideoFilename(caption?: string): Promise<string> {
+export async function getVideoFilename(caption?: string): Promise<string> {
     const filename = caption ?? `${Date.now()}`
-    // Normalize separators to spaces
+    // Normalize separators to spaces and strip emoji
     const normalized = filename
+        .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
         .replace(/[_\-\.]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
 
-    // Split into segments of non-ASCII and ASCII text
-    const segments = normalized.split(/(\s+)/)
-    const hasNonAscii = /[^\x00-\x7F]/.test(normalized)
-
     let translated = normalized
-    if (hasNonAscii) {
-        // Extract only the non-ASCII parts to translate
-        const nonAsciiText = segments
-            .filter(s => /[^\x00-\x7F]/.test(s))
-            .join(' ')
-
-        if (nonAsciiText) {
-            let translatedNonAscii = ''
-            try {
-                const translate = (await import('translate')).default
-                const result = await translate(nonAsciiText, 'en')
-                if (result && /[a-zA-Z]/.test(result)) {
-                    translatedNonAscii = result
-                }
-            } catch {}
-
-            if (!translatedNonAscii) {
-                const anyAscii = (await import('any-ascii')).default
-                translatedNonAscii = anyAscii(nonAsciiText)
+    if (/[^\x00-\x7F]/.test(normalized)) {
+        try {
+            const translate = (await import('translate')).default
+            const result = await translate(normalized, { to: 'en', from: 'he' })
+            if (result && /[a-zA-Z]/.test(result)) {
+                translated = result
             }
-
-            // Replace non-ASCII segments with translated text
-            const translatedWords = translatedNonAscii.split(/\s+/)
-            let wordIndex = 0
-            translated = segments.map(s => {
-                if (/[^\x00-\x7F]/.test(s)) {
-                    return translatedWords[wordIndex++] ?? ''
-                }
-                return s
-            }).join('')
-        }
+        } catch {}
     }
 
     const cleanedFilename = translated
