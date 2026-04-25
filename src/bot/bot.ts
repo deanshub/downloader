@@ -280,17 +280,29 @@ export async function setupBot(): Promise<Telegraf<Context>> {
 
 async function getVideoFilename(caption?: string): Promise<string> {
     const filename = caption ?? `${Date.now()}`
-    let translated: string
-    try {
-        const translate = (await import('translate')).default
-        translated = await translate(filename, 'en')
-    } catch {
-        const anyAscii = (await import('any-ascii')).default
-        translated = anyAscii(filename)
+    const hasNonAscii = /[^\x00-\x7F]/.test(filename)
+    let translated = filename
+    if (hasNonAscii) {
+        try {
+            const translate = (await import('translate')).default
+            const result = await translate(filename, 'en')
+            if (result && /[a-zA-Z]/.test(result)) {
+                translated = result
+            } else {
+                throw new Error('Translation returned no useful text')
+            }
+        } catch {
+            const anyAscii = (await import('any-ascii')).default
+            translated = anyAscii(filename)
+        }
     }
     const cleanedFilename = translated
         .replace(/[^a-zA-Z0-9\s\.\-]/g, '')
+        .trim()
         .replace(/\s+/g, '_')
+    if (!cleanedFilename || cleanedFilename === '.mp4') {
+        return `${Date.now()}.mp4`
+    }
     return `${cleanedFilename}.mp4`
 }
 
