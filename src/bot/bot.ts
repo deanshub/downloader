@@ -28,6 +28,7 @@ export async function setupBot(): Promise<Telegraf<Context>> {
             telegram: {
                 apiRoot: process.env.LOCAL_API_ROOT,
             },
+            handlerTimeout: 600_000,
         }
     }
     const bot = new Telegraf(process.env.BOT_TOKEN, config)
