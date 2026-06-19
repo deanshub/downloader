@@ -13,7 +13,13 @@ UPDATE_INTERVAL=<time interval to check for a new release (0 to disable) - defau
 LOCAL_API_ROOT=<Local API root - if you have a telegram-bot-api running on your machine, you can use http://127.0.0.1:8081>
 PROWLARR_BASE_URL=<Prowlarr base URL (optional) - e.g., http://localhost:9696>
 PROWLARR_API_KEY=<Prowlarr API key (optional) - found in Prowlarr Settings > General > Security>
+SONARR_DIR=<TV shows directory (optional) - e.g., /media/tv>
+RADARR_DIR=<Movies directory (optional) - e.g., /media/movies>
 ```
+
+## Auto-organize with mnamer
+
+When both `SONARR_DIR` and `RADARR_DIR` are configured, downloaded files are automatically identified and moved to the appropriate directory using [mnamer](https://github.com/jkwill87/mnamer). Movies go to `RADARR_DIR` and TV episodes go to `SONARR_DIR`. If mnamer can't identify a file, it stays in `DOWNLOAD_DIR`.
 
 ## Prebuilt Docker images
 
@@ -47,4 +53,9 @@ services:
             ADMINS_CHATID: 'ID1,ID2'
             PROWLARR_BASE_URL: 'http://prowlarr:9696' # Optional
             PROWLARR_API_KEY: 'YOUR_API_KEY_HERE' # Optional
+            SONARR_DIR: '/tv' # Optional - set both SONARR_DIR and RADARR_DIR to enable mnamer
+            RADARR_DIR: '/movies' # Optional
+        volumes:
+            - '/media/pi/MyDrive/tv/:/tv'
+            - '/media/pi/MyDrive/movies/:/movies'
 ```

@@ -4,6 +4,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import type { Context, Telegraf } from 'telegraf'
 import { getAdmin } from './bot/isAdmin'
+import { mnamer } from './mnamer'
 
 const client = new WebTorrent({ utp: false })
 
@@ -87,11 +88,13 @@ export async function loadFromTorrentsDir(
                 })
                 downloads.add(torrent)
                 torrent
-                    .on('done', () => {
-                        bot.telegram.sendMessage(
-                            getAdmin(),
-                            `${torrent.name} Downloaded`
-                        )
+                    .on('done', async () => {
+                        const result = await mnamer(path.join(downloadsDir, torrent.name))
+                        if (result.moved) {
+                            bot.telegram.sendMessage(getAdmin(), `${result.filename} → ${result.destination}`)
+                        } else {
+                            bot.telegram.sendMessage(getAdmin(), `${torrent.name} → Downloads`)
+                        }
                         removeTorrent(torrent)
                     })
                     .on('error', () => {

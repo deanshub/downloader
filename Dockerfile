@@ -1,5 +1,7 @@
 FROM oven/bun:1
 
+RUN apt-get update && apt-get install -y python3 python3-pip && pip3 install --break-system-packages mnamer && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy only package.json and bun.lockb first to leverage Docker cache

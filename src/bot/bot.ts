@@ -1,5 +1,6 @@
 import { Telegraf, Context } from 'telegraf'
 import execa from 'execa'
+import path from 'path'
 import { set, get } from '../cbData'
 import { download, cancelDownload } from '../torrents'
 import { searchTorrents } from '../search'
@@ -14,6 +15,7 @@ import { deleteFile, filesCommand } from '../downloadedFiles'
 import { reply } from './messages'
 import { message } from 'telegraf/filters'
 import { downloadFile } from '../download'
+import { mnamer } from '../mnamer'
 import SpeedTest from '@cloudflare/speedtest';
 
 export async function setupBot(): Promise<Telegraf<Context>> {
@@ -88,7 +90,13 @@ export async function setupBot(): Promise<Telegraf<Context>> {
         const torrent = await download(magnetURI)
         torrent
             .on('done', async () => {
-                ctx.reply(`${torrent.name} Downloaded`)
+                const downloadsDir = process.env.DOWNLOAD_DIR ?? process.cwd()
+                const result = await mnamer(path.join(downloadsDir, torrent.name))
+                if (result.moved) {
+                    ctx.reply(`${result.filename} → ${result.destination}`)
+                } else {
+                    ctx.reply(`${torrent.name} → Downloads`)
+                }
                 await refreshDlna()
             })
             .on('error', (e) => {
@@ -127,11 +135,15 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                     console.log('cbData.data', cbData.data)
                     const torrent = await download(cbData.data)
                     torrent
-                        .on('done', () => {
+                        .on('done', async () => {
                             console.log('done downloading')
-                            ctx.replyWithHTML(stripHtml(`${torrent.name} Downloaded`)).catch(
-                                console.warn
-                            )
+                            const downloadsDir = process.env.DOWNLOAD_DIR ?? process.cwd()
+                            const result = await mnamer(path.join(downloadsDir, torrent.name))
+                            if (result.moved) {
+                                ctx.replyWithHTML(stripHtml(`${result.filename} → ${result.destination}`)).catch(console.warn)
+                            } else {
+                                ctx.replyWithHTML(stripHtml(`${torrent.name} → Downloads`)).catch(console.warn)
+                            }
                         })
                         .on('error', (e) => {
                             console.error('error downloading', e)
@@ -262,8 +274,14 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 }
                 throw e
             }
+            const downloadsDir = process.env.DOWNLOAD_DIR ?? process.cwd()
             await downloadFile(file.href, filename)
-            await ctx.reply(`Video saved as ${filename}`)
+            const result = await mnamer(path.join(downloadsDir, filename))
+            if (result.moved) {
+                await ctx.reply(`${result.filename} → ${result.destination}`)
+            } else {
+                await ctx.reply(`${filename} → Downloads`)
+            }
         } catch (error) {
             console.error('Error processing video:', error)
             const name = ctx.message.video?.file_name ?? 'unknown'
@@ -289,8 +307,14 @@ export async function setupBot(): Promise<Telegraf<Context>> {
                 }
                 throw e
             }
+            const downloadsDir = process.env.DOWNLOAD_DIR ?? process.cwd()
             await downloadFile(file.href, filename)
-            await ctx.reply(`Video saved as ${filename}`)
+            const result = await mnamer(path.join(downloadsDir, filename))
+            if (result.moved) {
+                await ctx.reply(`${result.filename} → ${result.destination}`)
+            } else {
+                await ctx.reply(`${filename} → Downloads`)
+            }
         } catch (error) {
             console.error('Error processing document:', error)
             const name = doc.file_name ?? 'unknown'
